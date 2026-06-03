@@ -257,8 +257,8 @@ header, footer, #MainMenu { visibility: hidden; }
     margin: 6px 0;
 }
 
-/* ── CHAT INPUT AREA ── */
-.stChatInputContainer, [data-testid="stChatInput"] {
+/* ── CHAT INPUT AREA (outer fixed wrapper) ── */
+[data-testid="stChatInput"] {
     position: fixed !important;
     bottom: 0 !important;
     left: 50% !important;
@@ -274,9 +274,21 @@ header, footer, #MainMenu { visibility: hidden; }
     border-top: 1px solid rgba(249,115,22,0.2) !important;
     backdrop-filter: blur(20px) !important;
     z-index: 999 !important;
+    box-sizing: border-box !important;
+}
+
+/* ── INNER FLEX ROW (textarea + button side by side) ── */
+.stChatInputContainer {
+    display: flex !important;
+    align-items: flex-end !important;
+    gap: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 [data-testid="stChatInput"] textarea {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
     background: rgba(28,17,8,0.9) !important;
     border: 1.5px solid rgba(249,115,22,0.4) !important;
     border-radius: 12px !important;
@@ -286,6 +298,7 @@ header, footer, #MainMenu { visibility: hidden; }
     padding: 12px 16px !important;
     resize: none !important;
     transition: border-color 0.2s ease !important;
+    box-sizing: border-box !important;
 }
 
 [data-testid="stChatInput"] textarea:focus {
@@ -298,20 +311,23 @@ header, footer, #MainMenu { visibility: hidden; }
     color: rgba(245,240,232,0.4) !important;
 }
 
-[data-testid="stChatInput"] button {
+[data-testid="stChatInput"] button,
+[data-testid="stChatInputSubmitButton"] {
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
     background: linear-gradient(135deg, #F97316, #EA580C) !important;
     border: none !important;
     border-radius: 10px !important;
-    color: white !important;
-    width: 44px !important;
-    height: 44px !important;
     position: relative !important;
     overflow: visible !important;
-    flex-shrink: 0 !important;
+    cursor: pointer !important;
     transition: opacity 0.2s ease, transform 0.1s ease !important;
 }
 
-[data-testid="stChatInput"] button:hover {
+[data-testid="stChatInput"] button:hover,
+[data-testid="stChatInputSubmitButton"]:hover {
     opacity: 0.9 !important;
     transform: scale(1.05) !important;
 }
