@@ -277,14 +277,12 @@ header, footer, #MainMenu { visibility: hidden; }
     box-sizing: border-box !important;
 }
 
-/* ── FORCE INNER FLEX ROW — transparent inner containers (remove double-box) ── */
+/* ── INNER CONTAINERS — position:relative so button can be absolute inside ── */
 [data-testid="stChatInput"] > div,
 [data-testid="stChatInput"] > div > div {
-    display: flex !important;
-    align-items: flex-end !important;
-    gap: 10px !important;
+    position: relative !important;
     width: 100% !important;
-    box-sizing: border-box !important;
+    display: block !important;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -292,21 +290,20 @@ header, footer, #MainMenu { visibility: hidden; }
     margin: 0 !important;
 }
 
+/* ── TEXTAREA — full width, right padding leaves room for the button ── */
 [data-testid="stChatInput"] textarea {
-    order: 1 !important;
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    max-width: calc(100% - 58px) !important;
+    width: 100% !important;
+    padding: 14px 56px 14px 18px !important;
     background: rgba(28,17,8,0.9) !important;
     border: 1.5px solid rgba(249,115,22,0.4) !important;
-    border-radius: 12px !important;
+    border-radius: 14px !important;
     color: var(--nd-text) !important;
     font-family: 'Inter', sans-serif !important;
     font-size: 15px !important;
-    padding: 12px 16px !important;
     resize: none !important;
     transition: border-color 0.2s ease !important;
     box-sizing: border-box !important;
+    line-height: 1.5 !important;
 }
 
 [data-testid="stChatInput"] textarea:focus {
@@ -319,39 +316,39 @@ header, footer, #MainMenu { visibility: hidden; }
     color: rgba(245,240,232,0.4) !important;
 }
 
-/* ── SEND BUTTON — always visible on the RIGHT, up arrow via background SVG ── */
+/* ── SEND BUTTON — absolutely placed INSIDE the box on the RIGHT ── */
 [data-testid="stChatInput"] button,
 [data-testid="stChatInputSubmitButton"] {
-    order: 2 !important;
+    position: absolute !important;
+    right: 8px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     opacity: 1 !important;
     visibility: visible !important;
-    flex: 0 0 44px !important;
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
+    width: 36px !important;
+    height: 36px !important;
     border: none !important;
-    border-radius: 10px !important;
-    position: relative !important;
+    border-radius: 8px !important;
     overflow: hidden !important;
     cursor: pointer !important;
+    z-index: 10 !important;
     transition: transform 0.1s ease, filter 0.2s ease !important;
-    /* Orange gradient + up arrow SVG baked in */
     background:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z'/%3E%3C/svg%3E") no-repeat center center,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z'/%3E%3C/svg%3E") no-repeat center center,
         linear-gradient(135deg, #F97316, #EA580C) !important;
-    background-size: 22px 22px, cover !important;
+    background-size: 18px 18px, cover !important;
 }
 
 [data-testid="stChatInput"] button:hover,
 [data-testid="stChatInputSubmitButton"]:hover {
-    filter: brightness(1.1) !important;
-    transform: scale(1.05) !important;
+    filter: brightness(1.15) !important;
+    transform: translateY(-50%) scale(1.08) !important;
 }
 
-/* Hide the default SVG icon since we use background-image instead */
+/* Hide the default SVG */
 [data-testid="stChatInput"] button svg,
 [data-testid="stChatInputSubmitButton"] svg {
     display: none !important;
