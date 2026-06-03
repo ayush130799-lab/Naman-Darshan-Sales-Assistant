@@ -305,6 +305,9 @@ header, footer, #MainMenu { visibility: hidden; }
     color: white !important;
     width: 44px !important;
     height: 44px !important;
+    position: relative !important;
+    overflow: visible !important;
+    flex-shrink: 0 !important;
     transition: opacity 0.2s ease, transform 0.1s ease !important;
 }
 
@@ -337,16 +340,27 @@ header, footer, #MainMenu { visibility: hidden; }
     margin: 0 auto 12px auto;
 }
 
-/* ── SEND BUTTON — up arrow ── */
-[data-testid="stChatInput"] button svg {
-    display: none !important;
+/* ── SEND BUTTON — up arrow (absolute centered) ── */
+[data-testid="stChatInput"] button svg,
+[data-testid="stChatInputSubmitButton"] svg {
+    opacity: 0 !important;
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
 }
-[data-testid="stChatInput"] button::after {
+[data-testid="stChatInput"] button::after,
+[data-testid="stChatInputSubmitButton"]::after {
     content: '↑';
     font-size: 22px;
-    font-weight: 700;
-    color: white;
+    font-weight: 800;
+    color: white !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
     line-height: 1;
+    display: block !important;
+    pointer-events: none;
 }
 
 /* ── MOBILE RESPONSIVE ── */
