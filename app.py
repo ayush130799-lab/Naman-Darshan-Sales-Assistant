@@ -337,6 +337,69 @@ header, footer, #MainMenu { visibility: hidden; }
     margin: 0 auto 12px auto;
 }
 
+/* ── SEND BUTTON — up arrow ── */
+[data-testid="stChatInput"] button svg {
+    display: none !important;
+}
+[data-testid="stChatInput"] button::after {
+    content: '↑';
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+}
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+    .block-container {
+        padding: 0 6px !important;
+    }
+    .bot-bubble {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(20, 12, 4, 0.97) !important;
+        max-width: 88% !important;
+        font-size: 14px !important;
+    }
+    .user-bubble {
+        max-width: 88% !important;
+        font-size: 14px !important;
+    }
+    .stChatInputContainer, [data-testid="stChatInput"] {
+        left: 0 !important;
+        transform: none !important;
+        width: 100vw !important;
+        padding: 10px 12px !important;
+        box-sizing: border-box !important;
+    }
+    .nd-header-inner {
+        padding: 10px 14px;
+    }
+    .nd-logo-text {
+        font-size: 17px !important;
+    }
+    .nd-logo-tagline {
+        font-size: 9px !important;
+    }
+    .nd-ticker {
+        display: none;
+    }
+    .nd-header-badge {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+    .bot-avatar {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 14px !important;
+    }
+    .user-avatar {
+        width: 26px !important;
+        height: 26px !important;
+        font-size: 12px !important;
+    }
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -439,11 +502,12 @@ if user_input:
         else:
             i += 1
 
-    response = generate_response(
-        query=user_input,
-        history=history,
-        user_id=user_id
-    )
+    with st.spinner("🙏 Preparing your darshan details..."):
+        response = generate_response(
+            query=user_input,
+            history=history,
+            user_id=user_id
+        )
 
     # Also save to MongoDB for persistence across sessions
     save_memory(
