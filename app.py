@@ -277,8 +277,9 @@ header, footer, #MainMenu { visibility: hidden; }
     box-sizing: border-box !important;
 }
 
-/* ── INNER FLEX ROW (textarea + button side by side) ── */
-.stChatInputContainer {
+/* ── FORCE INNER FLEX ROW — target all div levels inside stChatInput ── */
+[data-testid="stChatInput"] > div,
+[data-testid="stChatInput"] > div > div {
     display: flex !important;
     align-items: flex-end !important;
     gap: 10px !important;
@@ -289,6 +290,7 @@ header, footer, #MainMenu { visibility: hidden; }
 [data-testid="stChatInput"] textarea {
     flex: 1 1 auto !important;
     min-width: 0 !important;
+    max-width: calc(100% - 58px) !important;
     background: rgba(28,17,8,0.9) !important;
     border: 1.5px solid rgba(249,115,22,0.4) !important;
     border-radius: 12px !important;
@@ -311,25 +313,41 @@ header, footer, #MainMenu { visibility: hidden; }
     color: rgba(245,240,232,0.4) !important;
 }
 
+/* ── SEND BUTTON — always visible, up arrow via background SVG ── */
 [data-testid="stChatInput"] button,
 [data-testid="stChatInputSubmitButton"] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 1 !important;
+    visibility: visible !important;
     flex: 0 0 44px !important;
     width: 44px !important;
     min-width: 44px !important;
     height: 44px !important;
-    background: linear-gradient(135deg, #F97316, #EA580C) !important;
     border: none !important;
     border-radius: 10px !important;
     position: relative !important;
-    overflow: visible !important;
+    overflow: hidden !important;
     cursor: pointer !important;
-    transition: opacity 0.2s ease, transform 0.1s ease !important;
+    transition: transform 0.1s ease, filter 0.2s ease !important;
+    /* Orange gradient + up arrow SVG baked in */
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z'/%3E%3C/svg%3E") no-repeat center center,
+        linear-gradient(135deg, #F97316, #EA580C) !important;
+    background-size: 22px 22px, cover !important;
 }
 
 [data-testid="stChatInput"] button:hover,
 [data-testid="stChatInputSubmitButton"]:hover {
-    opacity: 0.9 !important;
+    filter: brightness(1.1) !important;
     transform: scale(1.05) !important;
+}
+
+/* Hide the default SVG icon since we use background-image instead */
+[data-testid="stChatInput"] button svg,
+[data-testid="stChatInputSubmitButton"] svg {
+    display: none !important;
 }
 
 /* ── SCROLLBAR ── */
@@ -356,28 +374,8 @@ header, footer, #MainMenu { visibility: hidden; }
     margin: 0 auto 12px auto;
 }
 
-/* ── SEND BUTTON — up arrow (absolute centered) ── */
-[data-testid="stChatInput"] button svg,
-[data-testid="stChatInputSubmitButton"] svg {
-    opacity: 0 !important;
-    position: absolute !important;
-    width: 0 !important;
-    height: 0 !important;
-}
-[data-testid="stChatInput"] button::after,
-[data-testid="stChatInputSubmitButton"]::after {
-    content: '↑';
-    font-size: 22px;
-    font-weight: 800;
-    color: white !important;
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    line-height: 1;
-    display: block !important;
-    pointer-events: none;
-}
+
+
 
 /* ── MOBILE RESPONSIVE ── */
 @media (max-width: 768px) {
