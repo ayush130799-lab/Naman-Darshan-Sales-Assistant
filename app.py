@@ -277,77 +277,59 @@ header, footer, #MainMenu { visibility: hidden; }
     box-sizing: border-box !important;
 }
 
-/* ── OUTER DIV — transparent passthrough ── */
-[data-testid="stChatInput"] > div {
+/* ── CHAT INPUT — inner containers: transparent flex rows ── */
+[data-testid="stChatInput"] > div,
+[data-testid="stChatInput"] > div > div {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
     width: 100% !important;
     background: transparent !important;
     border: none !important;
+    box-shadow: none !important;
     padding: 0 !important;
     margin: 0 !important;
     box-sizing: border-box !important;
 }
 
-/* ── INNER DIV — THIS is the visible styled box ── */
-[data-testid="stChatInput"] > div > div {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 6px !important;
-    width: 100% !important;
-    background: rgba(28,17,8,0.92) !important;
-    border: 1.5px solid rgba(249,115,22,0.45) !important;
-    border-radius: 14px !important;
-    padding: 6px 6px 6px 4px !important;
-    box-sizing: border-box !important;
-    overflow: hidden !important;
-    transition: border-color 0.2s ease !important;
-}
-
-[data-testid="stChatInput"] > div > div:focus-within {
-    border-color: #F97316 !important;
-    box-shadow: 0 0 0 3px rgba(249,115,22,0.15) !important;
-}
-
-/* ── TEXTAREA — transparent inside the styled box ── */
+/* ── TEXTAREA ── */
 [data-testid="stChatInput"] textarea {
-    order: 1 !important;
     flex: 1 1 auto !important;
     min-width: 0 !important;
-    background: transparent !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
+    background: rgba(28,17,8,0.9) !important;
+    border: 1.5px solid rgba(249,115,22,0.4) !important;
+    border-radius: 12px !important;
     color: var(--nd-text) !important;
     font-family: 'Inter', sans-serif !important;
     font-size: 15px !important;
-    padding: 8px 12px !important;
+    padding: 12px 16px !important;
     resize: none !important;
+    outline: none !important;
     line-height: 1.5 !important;
     box-sizing: border-box !important;
+    transition: border-color 0.2s ease !important;
 }
 
 [data-testid="stChatInput"] textarea:focus {
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
+    border-color: #F97316 !important;
+    box-shadow: 0 0 0 3px rgba(249,115,22,0.15) !important;
 }
 
 [data-testid="stChatInput"] textarea::placeholder {
     color: rgba(245,240,232,0.4) !important;
 }
 
-/* ── SEND BUTTON — flex child on the RIGHT inside the box ── */
+/* ── SEND BUTTON (left side, DOM natural order) ── */
 [data-testid="stChatInput"] button,
 [data-testid="stChatInputSubmitButton"] {
-    order: 2 !important;
-    flex: 0 0 38px !important;
-    width: 38px !important;
-    height: 38px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     opacity: 1 !important;
     visibility: visible !important;
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    height: 44px !important;
     border: none !important;
     border-radius: 10px !important;
     cursor: pointer !important;
@@ -356,19 +338,21 @@ header, footer, #MainMenu { visibility: hidden; }
     background:
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z'/%3E%3C/svg%3E") no-repeat center center,
         linear-gradient(135deg, #F97316, #EA580C) !important;
-    background-size: 18px 18px, cover !important;
+    background-size: 20px 20px, cover !important;
 }
 
 [data-testid="stChatInput"] button:hover,
 [data-testid="stChatInputSubmitButton"]:hover {
     filter: brightness(1.15) !important;
-    transform: scale(1.06) !important;
+    transform: scale(1.05) !important;
 }
 
 [data-testid="stChatInput"] button svg,
 [data-testid="stChatInputSubmitButton"] svg {
     display: none !important;
 }
+
+
 
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar { width: 4px; }
