@@ -1,0 +1,6 @@
+.env
+__pycache__/
+myenv/
+db_dump.txt
+vectorstore/
+db_dump.txt
