@@ -277,7 +277,7 @@ header, footer, #MainMenu { visibility: hidden; }
     box-sizing: border-box !important;
 }
 
-/* ── FORCE INNER FLEX ROW — target all div levels inside stChatInput ── */
+/* ── FORCE INNER FLEX ROW — transparent inner containers (remove double-box) ── */
 [data-testid="stChatInput"] > div,
 [data-testid="stChatInput"] > div > div {
     display: flex !important;
@@ -285,9 +285,15 @@ header, footer, #MainMenu { visibility: hidden; }
     gap: 10px !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
 [data-testid="stChatInput"] textarea {
+    order: 1 !important;
     flex: 1 1 auto !important;
     min-width: 0 !important;
     max-width: calc(100% - 58px) !important;
@@ -313,9 +319,10 @@ header, footer, #MainMenu { visibility: hidden; }
     color: rgba(245,240,232,0.4) !important;
 }
 
-/* ── SEND BUTTON — always visible, up arrow via background SVG ── */
+/* ── SEND BUTTON — always visible on the RIGHT, up arrow via background SVG ── */
 [data-testid="stChatInput"] button,
 [data-testid="stChatInputSubmitButton"] {
+    order: 2 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
