@@ -1,0 +1,6 @@
+[server]
+fileWatcherType = "none"
+
+[runner]
+# Exclude large library folders from file watching to suppress torchvision noise
+fastReruns = false

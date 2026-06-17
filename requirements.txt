@@ -13,3 +13,6 @@ rapidfuzz
 dnspython
 sentencepiece
 accelerate
+razorpay
+flask
+flask-cors

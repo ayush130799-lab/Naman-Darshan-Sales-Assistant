@@ -1,7 +1,20 @@
 import streamlit as st
 import uuid
+import importlib
+
+# Force reload sub-modules so Streamlit picks up changes dynamically
+import prompt_builder
+import recommendation_engine
+import qa_handler
+import rag_pipeline
+
+importlib.reload(prompt_builder)
+importlib.reload(recommendation_engine)
+importlib.reload(qa_handler)
+importlib.reload(rag_pipeline)
 
 from rag_pipeline import generate_response
+
 from memory import get_memory, save_memory
 
 # ---------------------------------------------------
@@ -31,7 +44,17 @@ if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "assistant",
-            "content": "🙏 Welcome to Naman Darshan! Which temple are you planning to visit?"
+            "content": (
+                "🙏 Jai Shri Ram!\n\n"
+                "I am your Naman Darshan's AI assistant and can help you with:\n\n"
+                "🛕 Darshan Bookings\n"
+                "🙏 Puja & Ritual Services\n"
+                "🚩 Yatra Packages\n"
+                "🎁 Prasadam & Chadhava\n"
+                "🔮 Astrology Services\n"
+                "🏡 Sanatan Wall\n\n"
+                "Please let me know how I may assist you today."
+            )
         }
     ]
 
@@ -450,21 +473,27 @@ st.markdown("""
             </div>
         </div>
         <div class="nd-header-badge">
-            <span>✦</span> AI Darshan Assistant
+            <span>✦</span> Naman Darshan's AI assistant
         </div>
     </div>
 </div>
 
 <div class="nd-ticker">
     <div class="nd-ticker-inner">
-        <span class="nd-ticker-item">✅ 100% Darshan Guaranteed</span>
-        <span class="nd-ticker-item">🙏 India's Largest Community for Devotees</span>
-        <span class="nd-ticker-item">⭐ 4.7 Stars · 40 Lakh+ Devotees Served</span>
-        <span class="nd-ticker-item">🕌 VIP Darshan at 50+ Sacred Temples</span>
-        <span class="nd-ticker-item">✅ 100% Darshan Guaranteed</span>
-        <span class="nd-ticker-item">🙏 India's Largest Community for Devotees</span>
-        <span class="nd-ticker-item">⭐ 4.7 Stars · 40 Lakh+ Devotees Served</span>
-        <span class="nd-ticker-item">🕌 VIP Darshan at 50+ Sacred Temples</span>
+        <span class="nd-ticker-item">🛕 Temples</span>
+        <span class="nd-ticker-item">🪔 Puja</span>
+        <span class="nd-ticker-item">🚌 Yatra Packages</span>
+        <span class="nd-ticker-item">🌸 Prasadam</span>
+        <span class="nd-ticker-item">🙏 Chadhava</span>
+        <span class="nd-ticker-item">🔮 Astro</span>
+        <span class="nd-ticker-item">📿 Sanatan Wall</span>
+        <span class="nd-ticker-item">🛕 Temples</span>
+        <span class="nd-ticker-item">🪔 Puja</span>
+        <span class="nd-ticker-item">🚌 Yatra Packages</span>
+        <span class="nd-ticker-item">🌸 Prasadam</span>
+        <span class="nd-ticker-item">🙏 Chadhava</span>
+        <span class="nd-ticker-item">🔮 Astro</span>
+        <span class="nd-ticker-item">📿 Sanatan Wall</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -506,7 +535,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 # CHAT INPUT
 # ---------------------------------------------------
 
-user_input = st.chat_input("Ask about VIP Darshan...")
+user_input = st.chat_input("Ask about Naman Darshan's Services...")
 
 # ---------------------------------------------------
 # RESPONSE

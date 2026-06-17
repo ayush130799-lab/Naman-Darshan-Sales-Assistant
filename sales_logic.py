@@ -8,6 +8,123 @@ def detect_user_intent(query):
     query = query.lower().strip()
 
     # ---------------------------------------------------
+    # CHECK PAYMENT STATUS — user asking about their payment
+    # ---------------------------------------------------
+    if any(w in query for w in [
+        "check payment", "payment status", "payment done", "payment successful",
+        "payment complete", "payment received", "did my payment", "payment confirm",
+        "payment ho gaya", "payment hua", "payment check", "payment pending",
+        "payment failed", "payment ka status", "booking status", "check my booking",
+        "booking confirm hua", "booking ho gaya", "mera payment", "payment verify",
+        "is payment done", "has payment", "payment through", "went through",
+        "payment link status", "payment link check", "paid already", "i have paid",
+        "already paid", "payment kar diya", "payment kar chuka",
+    ]):
+        return "CHECK_PAYMENT"
+
+    # ---------------------------------------------------
+    # PAYMENT CONFIRM — user agrees to proceed with payment
+    # ---------------------------------------------------
+    # Robust checks for payment link requests with word gaps
+    contains_pay = any(w in query for w in ["payment", "pay", "link", "online"])
+    contains_action = any(w in query for w in ["proceed", "confirm", "finalize", "complete", "yes", "do", "make", "now", "send", "share", "give", "get", "need", "want", "please", "provide", "karo", "bhejo", "finalise"])
+    contains_info = any(w in query for w in ["when", "how", "where", "timing", "method", "option", "tax", "gst", "safe", "secure", "timing", "time", "date"])
+
+    if contains_pay and contains_action and not contains_info:
+        return "PAYMENT_CONFIRM"
+
+    if any(w in query for w in [
+        "yes pay", "proceed with payment", "generate payment link", "pay now",
+        "ready to pay", "make payment", "do payment", "complete payment",
+        "want to pay", "i want to pay", "payment karna hai", "payment kar do",
+        "send payment link", "share payment link", "payment link bhejo",
+        "payment link send", "payment link chahiye", "payment karo",
+        "online payment karna", "pay online", "pay the amount", "pay amount",
+        "yes proceed payment", "haan pay", "agree to pay", "ok to pay",
+        "proceed to pay", "go ahead with payment", "confirm payment",
+        "yes i'll pay", "yes i will pay", "i will pay", "let's pay",
+        "send me the payment link", "send me payment link", "send the payment link",
+        "please send the payment link", "please send me the payment link",
+        "give me the payment link", "give me payment link", "give payment link",
+        "share the payment link", "share me the payment link", "share me payment link",
+        "send link", "send the link", "send me the link", "send me link",
+        "payment link send", "payment link share"
+    ]):
+        return "PAYMENT_CONFIRM"
+
+    # ---------------------------------------------------
+    # TEMPLE LIST / PACKAGE COUNT — customer asking which temples or packages are covered, available, or their count
+    # ---------------------------------------------------
+
+    if any(w in query for w in [
+        "which temples", "what temples", "which temple do you", "temples do you",
+        "temples you cover", "temples you serve", "temples available",
+        "how many temples", "list of temples", "temples you offer",
+        "which mandir", "what mandir", "which places", "all temples",
+        "temples covered", "supported temples", "temples you have",
+        "darshan services for which", "assisted darshan for which", "vip darshan for which",
+        "for which temples", "which all temples",
+        "how many yatra", "how many packages", "how many abodes",
+        "packages available", "packages you cover", "packages you offer",
+        "number of yatra", "number of packages", "number of temples",
+        "list of packages", "list of yatra", "which packages", "what packages"
+    ]):
+        return "TEMPLE_LIST"
+
+    # ---------------------------------------------------
+    # PUJA LIST — customer asking about listed pujas or available pujas
+    # ---------------------------------------------------
+    if any(w in query for w in [
+        "what pujas", "which pujas", "pujas list", "list of pujas",
+        "pujas you offer", "pujas available", "available pujas",
+        "listed pujas", "pujas on website", "pujas on the website",
+        "pujas in naman darshan", "pujas of naman darshan",
+        "what poojas", "which poojas", "poojas list", "list of poojas",
+        "poojas you offer", "poojas available", "available poojas"
+    ]):
+        return "PUJA_LIST"
+
+
+    # ---------------------------------------------------
+    # PACKAGE_DISCOVERY — user asking for a recommendation
+    # without specifying a destination.
+    # Rule: never assume a destination that was not provided.
+    # ---------------------------------------------------
+
+    _discovery_triggers = [
+        "best yatra", "best package", "best darshan", "best pilgrimage",
+        "best trip", "yatra package", "pilgrimage package",
+        "recommend package", "suggest package", "suggest darshan",
+        "recommend darshan", "suggest trip", "suggest yatra",
+        "find package", "find best", "which package", "what package",
+        "suitable package", "good package", "any package",
+        "packages for me", "package for me", "yatra for me",
+        "darshan package", "which yatra", "plan yatra",
+        "plan pilgrimage", "plan darshan", "plan trip",
+        "suggest me", "suggest some", "suggest a", "recommend me", "recommend some", "recommend a",
+    ]
+    
+    _exclude_words = ["timing", "timings", "price", "cost", "charges", "fee", "cancel", "refund", "official", "safety", "safe", "wheelchair", "elderly", "document"]
+
+    _has_discovery_keywords = (
+        any(w in query for w in _discovery_triggers)
+        and not any(exc in query for exc in _exclude_words)
+    )
+    
+    # Generic word combination check
+    _action_words = ["suggest", "recommend", "suggestion", "recommendation", "option", "choice"]
+    _target_words = ["darshan", "yatra", "package", "trip", "pilgrimage", "temple", "mandir", "place", "destination", "abode"]
+    
+    _combined_match = (
+        any(act in query for act in _action_words)
+        and any(tgt in query for tgt in _target_words)
+        and not any(exc in query for exc in _exclude_words)
+    )
+    
+    if _has_discovery_keywords or _combined_match:
+        return "PACKAGE_DISCOVERY"
+
+    # ---------------------------------------------------
     # POSITIVE / READY TO BOOK
     # ---------------------------------------------------
 
@@ -179,10 +296,13 @@ def detect_user_intent(query):
     ]):
         return "TRAVEL_PLANNING"
 
+
+
     # ---------------------------------------------------
     # SEND DETAILS — user agrees to receive WhatsApp verification details
     # (must come BEFORE TRUST so "yes please send" doesn't get swallowed by TRUST)
     # ---------------------------------------------------
+
 
     if any(w in query for w in [
         "yes please send", "please send", "send it", "send details",
@@ -266,13 +386,12 @@ def detect_user_intent(query):
     ]):
         return "OFFICIAL"
 
-    # ---------------------------------------------------
-    # BENEFITS / WHY VIP / SERVICE VALUE
+    # BENEFITS / WHY ASSISTED / SERVICE VALUE
     # ---------------------------------------------------
 
     if any(w in query for w in [
-        "benefit", "benefits", "fayda", "advantages", "why vip",
-        "vip darshan", "special", "priority", "why should",
+        "benefit", "benefits", "fayda", "advantages", "why vip", "why assisted",
+        "vip darshan", "assisted darshan", "special", "priority", "why should",
         "kyu", "difference", "kya milega", "kya hoga", "kya faida",
         "kya milta hai", "queue", "line", "bheed",
         "kitna time", "kitni der", "how long", "wait time",
@@ -344,5 +463,16 @@ def detect_user_intent(query):
         "visit karna hai", "jana hai", "plan kar raha"
     ]):
         return "BOOKING"
+
+    # ---------------------------------------------------
+    # GREETING — pure greetings
+    # ---------------------------------------------------
+    cleaned_query = "".join(c for c in query if c.isalnum() or c.isspace()).strip()
+    if cleaned_query in [
+        "hello", "hi", "hey", "namaste", "good morning", "good afternoon", "good evening",
+        "hii", "helo", "namaskar", "hey there", "hi there", "hello there", "namaste ji",
+        "namaskar ji", "goodmorning", "goodevening", "goodafternoon"
+    ]:
+        return "GREETING"
 
     return "GENERAL"
