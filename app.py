@@ -831,26 +831,25 @@ def handle_submit():
 with st.container():
     msgs_html = build_messages_html(st.session_state.messages)
     
-    st.markdown(f"""
-    <!-- ══ CHAT CARD HEADER & MESSAGES ══ -->
-    <div class="nd-card-head">
-      <div class="nd-card-head-pattern"></div>
-      <div class="nd-card-head-row">
-        <span class="nd-card-head-star">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="white">
-            <path d="M7 2L9 6.5L13.5 8.5L9 10.5L7 15L5 10.5L0.5 8.5L5 6.5L7 2zM17 12L18.2 14.8L21 16L18.2 17.2L17 20L15.8 17.2L13 16L15.8 14.8L17 12z"/>
-          </svg>
-        </span>
-        <div>
-          <div class="nd-card-head-title">AI Sales Assistant</div>
-          <div class="nd-card-head-sub">Your personal spiritual journey expert</div>
-        </div>
-      </div>
+    st.markdown(f"""<!-- ══ CHAT CARD HEADER & MESSAGES ══ -->
+<div class="nd-card-head">
+  <div class="nd-card-head-pattern"></div>
+  <div class="nd-card-head-row">
+    <span class="nd-card-head-star">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="white">
+        <path d="M7 2L9 6.5L13.5 8.5L9 10.5L7 15L5 10.5L0.5 8.5L5 6.5L7 2zM17 12L18.2 14.8L21 16L18.2 17.2L17 20L15.8 17.2L13 16L15.8 14.8L17 12z"/>
+      </svg>
+    </span>
+    <div>
+      <div class="nd-card-head-title">AI Sales Assistant</div>
+      <div class="nd-card-head-sub">Your personal spiritual journey expert</div>
     </div>
-    <div class="nd-msgs" id="nd-msgs">
-      {msgs_html}
-    </div>
-    """, unsafe_allow_html=True)
+  </div>
+</div>
+<div class="nd-msgs" id="nd-msgs">
+  {msgs_html}
+</div>
+""", unsafe_allow_html=True)
     
     input_col, send_col = st.columns([12, 1])
     
