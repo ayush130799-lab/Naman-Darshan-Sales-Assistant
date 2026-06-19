@@ -243,7 +243,7 @@ header, footer, #MainMenu,
 }}
 
 /* ══ CHAT CONTAINER ══ */
-div.st-key-chat_container {{
+div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) {{
   background: #ffffff !important;
   border-radius: 24px !important;
   box-shadow: 0 12px 40px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.02) !important;
@@ -262,28 +262,28 @@ div.st-key-chat_container {{
   box-sizing: border-box !important;
 }}
 
-div.st-key-chat_container > div[data-testid="stVerticalBlock"] {{
+div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) > div[data-testid="stVerticalBlock"] {{
   height: 100% !important;
   display: flex !important;
   flex-direction: column !important;
   gap: 0 !important;
 }}
 
-div.st-key-chat_container > div[data-testid="stVerticalBlock"] > div:first-child {{
+div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) > div[data-testid="stVerticalBlock"] > div:first-child {{
   flex: 1 1 auto !important;
   display: flex !important;
   flex-direction: column !important;
   overflow: hidden !important;
 }}
 
-div.st-key-chat_container > div[data-testid="stVerticalBlock"] > div:first-child > div[data-testid="stMarkdown"] {{
+div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) > div[data-testid="stVerticalBlock"] > div:first-child > div[data-testid="stMarkdown"] {{
   flex: 1 1 auto !important;
   display: flex !important;
   flex-direction: column !important;
   overflow: hidden !important;
 }}
 
-div.st-key-chat_container > div[data-testid="stVerticalBlock"] > div:first-child > div[data-testid="stMarkdown"] > div {{
+div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) > div[data-testid="stVerticalBlock"] > div:first-child > div[data-testid="stMarkdown"] > div {{
   flex: 1 1 auto !important;
   display: flex !important;
   flex-direction: column !important;
@@ -418,7 +418,7 @@ div.st-key-chat_container > div[data-testid="stVerticalBlock"] > div:first-child
 .nd-msgs::-webkit-scrollbar-thumb {{ background: rgba(255, 107, 0, 0.2); border-radius: 4px; }}
 
 /* ══ CHAT INPUT ══ */
-div.st-key-chat_container div[data-testid="stHorizontalBlock"] {{
+div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) div[data-testid="stHorizontalBlock"] {{
   flex: 0 0 auto !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -434,7 +434,7 @@ div.st-key-chat_container div[data-testid="stHorizontalBlock"] {{
   gap: 16px !important;
 }}
 
-div.st-key-chat_container div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {{
+div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {{
   background: transparent !important;
   background-color: transparent !important;
   padding: 0 !important;
@@ -445,12 +445,12 @@ div.st-key-chat_container div[data-testid="stHorizontalBlock"] > div[data-testid
   justify-content: center !important;
 }}
 
-div.st-key-chat_container div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:first-child {{
+div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:first-child {{
   flex: 1 1 auto !important;
   width: auto !important;
 }}
 
-div.st-key-chat_container div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child {{
+div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child {{
   flex: 0 0 46px !important;
   width: 46px !important;
   min-width: 46px !important;
@@ -634,7 +634,7 @@ div[data-testid="stButton"] button p {{
   .nd-om-line {{ width: 24px !important; }}
   .nd-om-badge {{ width: 38px !important; height: 38px !important; font-size: 16px !important; }}
   .nd-logo-icon {{ width: 40px !important; height: 40px !important; }}
-  div.st-key-chat_container {{ left: 0 !important; transform: none !important; width: 100vw !important; padding: 12px 8px 0 8px !important; bottom: 160px !important; border-radius: 0 !important; }}
+  div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) {{ left: 0 !important; transform: none !important; width: 100vw !important; padding: 12px 8px 0 8px !important; bottom: 160px !important; border-radius: 0 !important; }}
   .nd-nav {{ left: 0 !important; transform: none !important; width: 100vw !important; bottom: 8px !important; border-radius: 0 !important; border-left: none !important; border-right: none !important; }}
 }}
 </style>
@@ -823,7 +823,7 @@ def handle_submit():
         st.session_state.submitted_val = val
         st.session_state.chat_input_val = ""
 
-with st.container(key="chat_container"):
+with st.container():
     msgs_html = build_messages_html(st.session_state.messages)
     
     st.markdown(f"""
