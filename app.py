@@ -34,6 +34,9 @@ st.set_page_config(
 if "user_id" not in st.session_state:
     st.session_state.user_id = str(uuid.uuid4())
 
+if "submitted_val" not in st.session_state:
+    st.session_state.submitted_val = None
+
 user_id = st.session_state.user_id
 
 # ---------------------------------------------------
@@ -394,50 +397,61 @@ header, footer, #MainMenu,
 .nd-msgs::-webkit-scrollbar {{ width: 4px; }}
 .nd-msgs::-webkit-scrollbar-thumb {{ background: rgba(255, 107, 0, 0.2); border-radius: 4px; }}
 
-/* ══ STREAMLIT CHAT INPUT — MAKE IT OURS ══ */
-[data-testid="stBottom"],
-[data-testid="stBottom"] div,
-[data-testid="stBottom"] form {{
-  position: relative;
-  background: transparent !important;
-  background-color: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
-}}
-
-[data-testid="stBottom"] {{
+/* ══ STREAMLIT CHAT INPUT (COLUMNS) — MAKE IT OURS ══ */
+div[data-testid="stHorizontalBlock"] {{
   position: fixed !important;
   bottom: 104px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
   width: min(1168px, calc(95vw - 32px)) !important;
   z-index: 1500 !important;
-  padding: 0 !important;
-  box-sizing: border-box !important;
-}}
-
-/* The actual stChatInput wrapper */
-[data-testid="stChatInput"] {{
-  display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: nowrap !important;
-  align-items: center !important;
-}}
-
-[data-testid="stChatInput"] > div,
-[data-testid="stChatInput"] > div > div,
-[data-testid="stChatInput"] form {{
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: nowrap !important;
   align-items: center !important;
   gap: 12px !important;
-  width: 100% !important;
 }}
 
-/* Textarea */
-[data-testid="stChatInput"] textarea {{
-  flex: 1 !important;
+/* Prevent column wrapping on mobile */
+div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {{
+  background: transparent !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+}}
+
+div[data-testid="column"]:first-child {{
+  flex: 1 1 auto !important;
+  width: auto !important;
+}}
+
+div[data-testid="column"]:last-child {{
+  flex: 0 0 46px !important;
+  width: 46px !important;
+  min-width: 46px !important;
+  max-width: 46px !important;
+}}
+
+/* Text input styling */
+div[data-testid="stTextInput"] {{
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}}
+
+div[data-testid="stTextInput"] > div {{
+  background: transparent !important;
+  border: none !important;
+}}
+
+div[data-testid="stTextInput"] input {{
   background: #ffffff !important;
   border: 1px solid #EFE7DE !important;
   border-radius: 30px !important;
@@ -445,9 +459,9 @@ header, footer, #MainMenu,
   font-family: 'Inter', sans-serif !important;
   font-size: 14.5px !important;
   padding: 17px 24px !important;
+  height: 56px !important;
   min-height: 56px !important;
   max-height: 56px !important;
-  resize: none !important;
   outline: none !important;
   line-height: 1.5 !important;
   transition: all .2s ease !important;
@@ -455,21 +469,33 @@ header, footer, #MainMenu,
   box-sizing: border-box !important;
 }}
 
-[data-testid="stChatInput"] textarea:focus {{
+div[data-testid="stTextInput"] input:focus {{
   border-color: #FF6B00 !important;
   box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.08) !important;
 }}
 
-[data-testid="stChatInput"] textarea::placeholder {{
+div[data-testid="stTextInput"] input::placeholder {{
   color: #BBBBBB !important;
 }}
 
-/* Send button */
-[data-testid="stChatInputSubmitButton"],
-[data-testid="stChatInput"] button {{
-  flex: 0 0 46px !important;
-  width: 46px !important; height: 46px !important;
-  border: none !important; border-radius: 50% !important;
+/* Send button styling */
+div[data-testid="stButton"] {{
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}}
+
+div[data-testid="stButton"] button {{
+  width: 46px !important;
+  height: 46px !important;
+  min-width: 46px !important;
+  max-width: 46px !important;
+  border: none !important;
+  border-radius: 50% !important;
   cursor: pointer !important;
   background:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M2.01 21L23 12 2.01 3 2 10l15 2-15 2z'/%3E%3C/svg%3E") no-repeat center,
@@ -483,17 +509,31 @@ header, footer, #MainMenu,
   opacity: 1 !important;
   visibility: visible !important;
   transform: rotate(-30deg) !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  padding: 0 !important;
 }}
 
-[data-testid="stChatInputSubmitButton"]:hover,
-[data-testid="stChatInput"] button:hover {{
+div[data-testid="stButton"] button:hover {{
   filter: brightness(1.08) !important;
   transform: scale(1.06) rotate(-30deg) !important;
   box-shadow: 0 6px 18px rgba(255, 107, 0, 0.4) !important;
+  color: transparent !important;
 }}
 
-[data-testid="stChatInputSubmitButton"] svg,
-[data-testid="stChatInput"] button svg {{
+div[data-testid="stButton"] button:active,
+div[data-testid="stButton"] button:focus {{
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M2.01 21L23 12 2.01 3 2 10l15 2-15 2z'/%3E%3C/svg%3E") no-repeat center,
+    linear-gradient(135deg, #FF6B00, #FF9A3D) !important;
+  background-size: 16px, cover !important;
+  color: transparent !important;
+  outline: none !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(255, 107, 0, 0.3) !important;
+}}
+
+div[data-testid="stButton"] button p {{
   display: none !important;
 }}
 
@@ -568,7 +608,7 @@ header, footer, #MainMenu,
   .nd-om-line {{ width: 24px !important; }}
   .nd-om-badge {{ width: 38px !important; height: 38px !important; font-size: 16px !important; }}
   .nd-logo-icon {{ width: 40px !important; height: 40px !important; }}
-  [data-testid="stBottom"] {{ left: 0 !important; transform: none !important; width: 100vw !important; bottom: 84px !important; }}
+  div[data-testid="stHorizontalBlock"] {{ left: 0 !important; transform: none !important; width: 100vw !important; bottom: 84px !important; padding: 0 16px !important; }}
   .nd-nav {{ left: 0 !important; transform: none !important; width: 100vw !important; bottom: 8px !important; border-radius: 0 !important; border-left: none !important; border-right: none !important; }}
   .nd-card-wrap {{ left: 0 !important; transform: none !important; width: 100vw !important; padding: 12px 8px 0 8px; bottom: 160px; }}
 }}
@@ -772,10 +812,35 @@ header, footer, #MainMenu,
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------
-# CHAT INPUT (Streamlit native — styled via CSS above)
+# CHAT INPUT (Streamlit native columns for deployment layout)
 # ---------------------------------------------------
 
-user_input = st.chat_input("Ask me anything about NAMANDARSHAN SERVICES...")
+def handle_submit():
+    val = st.session_state.chat_input_val.strip()
+    if val:
+        st.session_state.submitted_val = val
+        st.session_state.chat_input_val = ""
+
+input_col, send_col = st.columns([12, 1])
+
+with input_col:
+    st.text_input(
+        label="Input",
+        placeholder="Ask me anything about NAMANDARSHAN SERVICES...",
+        label_visibility="collapsed",
+        key="chat_input_val",
+        on_change=handle_submit
+    )
+
+with send_col:
+    st.button(
+        label="Send",
+        key="chat_send_btn",
+        on_click=handle_submit
+    )
+
+user_input = st.session_state.submitted_val
+st.session_state.submitted_val = None
 
 # ---------------------------------------------------
 # RESPONSE HANDLING
