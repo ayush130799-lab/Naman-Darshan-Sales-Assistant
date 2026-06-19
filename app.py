@@ -298,7 +298,7 @@ div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) > div[data-testid="s
   flex-direction: column !important;
   justify-content: center !important;
   padding: 0 32px !important;
-  border-radius: 28px 28px 50% 50% / 28px 28px 16px 16px !important;
+  border-radius: 28px 28px 0 0 !important;
   position: relative !important;
   overflow: hidden !important;
   flex-shrink: 0 !important;
@@ -427,10 +427,11 @@ div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) div[data-testid="stH
   flex: 0 0 auto !important;
   width: 100% !important;
   max-width: 100% !important;
-  padding: 16px 32px 24px 32px !important;
+  padding: 20px 32px !important;
   margin: 0 !important;
-  background: #ffffff !important;
-  border-top: none !important;
+  background: #FAF8F5 !important;
+  border-top: 1px solid #EFE7DE !important;
+  border-radius: 0 0 28px 28px !important;
   box-sizing: border-box !important;
   display: flex !important;
   flex-direction: row !important;
@@ -856,7 +857,7 @@ with st.container():
     with input_col:
         st.text_input(
             label="Input",
-            placeholder="Ask me anything about NAMANDARSHAN SERVICES...",
+            placeholder="Ask me anything about NAMAN DARSHAN...",
             label_visibility="collapsed",
             key="chat_input_val",
             on_change=handle_submit
