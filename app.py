@@ -133,7 +133,7 @@ html, body {{
   max-height: 100vh !important;
 }}
 .stApp {{
-  background: #F8F4EF !important;
+  background: #F6F2ED !important;
   font-family: 'Inter', sans-serif !important;
   overflow: hidden !important;
   height: 100vh !important;
@@ -173,7 +173,7 @@ header, footer, #MainMenu,
 .nd-header {{
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: 92px;
+  height: 100px;
   background: linear-gradient(90deg, #FF6B00 0%, #FF9A3D 100%);
   display: flex;
   align-items: center;
@@ -184,7 +184,7 @@ header, footer, #MainMenu,
 
 .nd-header-inner {{
   display: flex; align-items: center;
-  width: 100%; max-width: 1200px;
+  width: 100%; max-width: 1400px;
   padding: 0 32px;
   margin: 0 auto;
   position: relative; z-index: 2;
@@ -245,7 +245,7 @@ header, footer, #MainMenu,
 /* ══ CHAT CONTAINER ══ */
 div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) {{
   background: #ffffff !important;
-  border-radius: 24px !important;
+  border-radius: 28px !important;
   box-shadow: 0 12px 40px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.02) !important;
   border: 1px solid #EFE7DE !important;
   display: flex !important;
@@ -253,11 +253,11 @@ div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) {{
   overflow: hidden !important;
   
   position: fixed !important;
-  top: 108px !important;
+  top: 124px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  width: min(1200px, 95vw) !important;
-  bottom: 96px !important;
+  width: min(1400px, 95vw) !important;
+  bottom: 124px !important;
   z-index: 500 !important;
   box-sizing: border-box !important;
 }}
@@ -292,11 +292,16 @@ div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) > div[data-testid="s
 
 .nd-card-head {{
   background: linear-gradient(90deg, #FF6B00 0%, #FF9A3D 100%);
-  padding: 24px 32px 32px 32px;
-  border-radius: 24px 24px 50% 50% / 24px 24px 16px 16px;
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
+  height: 120px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding: 0 32px !important;
+  border-radius: 28px 28px 50% 50% / 28px 28px 16px 16px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
 }}
 
 .nd-card-head-pattern {{
@@ -566,12 +571,12 @@ div[data-testid="stButton"] button p {{
 /* ══ BOTTOM NAV ══ */
 .nd-nav {{
   position: fixed !important;
-  bottom: 16px !important;
+  bottom: 24px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  width: min(1200px, 95vw) !important;
+  width: min(1400px, 95vw) !important;
   background: #ffffff !important;
-  border-radius: 20px !important;
+  border-radius: 24px !important;
   border: 1px solid #EFE7DE !important;
   display: flex !important;
   align-items: center !important;
