@@ -242,42 +242,64 @@ header, footer, #MainMenu,
   opacity: 0.35;
 }}
 
-/* ══ CHAT CARD (centered, between header and bottom areas) ══ */
-.nd-card-wrap {{
-  position: fixed;
-  top: 108px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(1200px, 95vw);
-  bottom: 160px;
-  z-index: 500;
-  padding: 0;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-}}
+/* ══ CHAT CONTAINER ══ */
+div.st-key-chat_container {
+  background: #ffffff !important;
+  border-radius: 24px !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.02) !important;
+  border: 1px solid #EFE7DE !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  
+  position: fixed !important;
+  top: 108px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: min(1200px, 95vw) !important;
+  bottom: 96px !important;
+  z-index: 500 !important;
+  box-sizing: border-box !important;
+}
 
-.nd-card {{
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.02);
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow: hidden;
-  border: 1px solid #EFE7DE;
-}}
+div.st-key-chat_container > div[data-testid="stVerticalBlock"] {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+}
 
-.nd-card-head {{
+div.st-key-chat_container > div[data-testid="stVerticalBlock"] > div:first-child {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+div.st-key-chat_container > div[data-testid="stVerticalBlock"] > div:first-child > div[data-testid="stMarkdown"] {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+div.st-key-chat_container > div[data-testid="stVerticalBlock"] > div:first-child > div[data-testid="stMarkdown"] > div {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.nd-card-head {
   background: linear-gradient(90deg, #FF6B00 0%, #FF9A3D 100%);
   padding: 24px 32px 32px 32px;
   border-radius: 24px 24px 50% 50% / 24px 24px 16px 16px;
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
-}}
+}
 
-.nd-card-head-pattern {{
+.nd-card-head-pattern {
   position: absolute;
   top: -20px; right: -20px;
   width: 140px; height: 140px;
@@ -285,64 +307,63 @@ header, footer, #MainMenu,
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' stroke='white' stroke-width='0.5' fill='none'/%3E%3Ccircle cx='50' cy='50' r='30' stroke='white' stroke-width='0.5' fill='none'/%3E%3Ccircle cx='50' cy='50' r='20' stroke='white' stroke-width='0.5' fill='none'/%3E%3Cpath d='M50 0 L50 100 M0 50 L100 50 M15 15 L85 85 M15 85 L85 15' stroke='white' stroke-width='0.3'/%3E%3Cpath d='M50 10 Q60 50 50 90 Q40 50 50 10 M10 50 Q50 60 90 50 Q50 40 10 50' fill='white' opacity='0.5'/%3E%3Cpath d='M25 25 Q50 60 75 75 Q60 50 25 25 M25 75 Q60 50 75 25 Q50 60 25 75' fill='white' opacity='0.5'/%3E%3C/svg%3E");
   background-size: cover;
   pointer-events: none;
-}}
+}
 
-.nd-card-head-row {{
+.nd-card-head-row {
   display: flex; align-items: center; gap: 14px;
   position: relative; z-index: 2;
-}}
+}
 
-.nd-card-head-star {{ 
+.nd-card-head-star { 
   display: flex;
   align-items: center;
   justify-content: center;
   animation: pulse 2s infinite ease-in-out;
-}}
+}
 
-@keyframes pulse {{
-  0% {{ transform: scale(1); opacity: 0.8; }}
-  50% {{ transform: scale(1.1); opacity: 1; }}
-  100% {{ transform: scale(1); opacity: 0.8; }}
-}}
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
 
-.nd-card-head-title {{ 
+.nd-card-head-title { 
   font-size: 20px; 
   font-weight: 700; 
   color: #ffffff; 
   letter-spacing: .4px;
   font-family: 'Inter', sans-serif;
-}}
+}
 
-.nd-card-head-sub {{ 
+.nd-card-head-sub { 
   font-size: 13px; 
   color: rgba(255,255,255,0.9); 
   margin-top: 3px;
   font-family: 'Inter', sans-serif;
-}}
+}
 
-/* ══ SCROLLABLE MESSAGES ══ */
-.nd-msgs {{
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px 32px 100px 32px;
-}}
+.nd-msgs {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding: 24px 32px !important;
+}
 
-.bot-row {{
+.bot-row {
   display: flex; align-items: flex-start; gap: 14px; margin: 16px 0;
-}}
+}
 
-.bot-av {{
+.bot-av {
   width: 40px; height: 40px;
   background: #FFF3E8;
   border: 1px solid #EFE7DE;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; margin-top: 2px;
-}}
+}
 
-.bot-col {{ max-width: 75%; }}
+.bot-col { max-width: 75%; }
 
-.bot-bubble {{
+.bot-bubble {
   background: #ffffff !important;
   border: 1px solid #EFE7DE !important;
   color: #222222 !important;
@@ -352,16 +373,16 @@ header, footer, #MainMenu,
   line-height: 1.6 !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
   word-break: break-word !important;
-}}
+}
 
-.user-row {{
+.user-row {
   display: flex; justify-content: flex-end;
   align-items: flex-end; margin: 16px 0;
-}}
+}
 
-.user-col {{ max-width: 75%; }}
+.user-col { max-width: 75%; }
 
-.user-bubble {{
+.user-bubble {
   background: #FFF3E8 !important;
   border: 1px solid #EFE7DE !important;
   color: #222222 !important;
@@ -372,114 +393,118 @@ header, footer, #MainMenu,
   font-weight: 500 !important;
   box-shadow: 0 4px 12px rgba(255, 107, 0, 0.03) !important;
   word-break: break-word !important;
-}}
+}
 
-.msg-content {{
+.msg-content {
   margin-bottom: 4px;
-}}
+}
 
-.msg-meta {{
+.msg-meta {
   font-size: 10px;
   color: #B0B0B0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 4px;
-}}
+}
 
-.user-tick {{
+.user-tick {
   color: #FF6B00;
   font-weight: bold;
   letter-spacing: -1.5px;
-}}
+}
 
-/* ══ SCROLLBAR ══ */
-.nd-msgs::-webkit-scrollbar {{ width: 4px; }}
-.nd-msgs::-webkit-scrollbar-thumb {{ background: rgba(255, 107, 0, 0.2); border-radius: 4px; }}
+.nd-msgs::-webkit-scrollbar { width: 4px; }
+.nd-msgs::-webkit-scrollbar-thumb { background: rgba(255, 107, 0, 0.2); border-radius: 4px; }
 
-/* ══ STREAMLIT CHAT INPUT (COLUMNS) — MAKE IT OURS ══ */
-div[data-testid="stHorizontalBlock"] {{
-  position: fixed !important;
-  bottom: 104px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  width: min(1168px, calc(95vw - 32px)) !important;
-  z-index: 1500 !important;
-  background: transparent !important;
-  background-color: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
+/* ══ CHAT INPUT ══ */
+div.st-key-chat_container div[data-testid="stHorizontalBlock"] {
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 16px 32px 24px 32px !important;
+  margin: 0 !important;
+  background: #ffffff !important;
+  border-top: none !important;
+  box-sizing: border-box !important;
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: nowrap !important;
   align-items: center !important;
-  gap: 12px !important;
-}}
+  gap: 16px !important;
+}
 
-/* Prevent column wrapping on mobile */
-div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {{
+div.st-key-chat_container div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {
   background: transparent !important;
   background-color: transparent !important;
   padding: 0 !important;
   margin: 0 !important;
   min-width: 0 !important;
-}}
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
 
-div[data-testid="column"]:first-child {{
+div.st-key-chat_container div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:first-child {
   flex: 1 1 auto !important;
   width: auto !important;
-}}
+}
 
-div[data-testid="column"]:last-child {{
+div.st-key-chat_container div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child {
   flex: 0 0 46px !important;
   width: 46px !important;
   min-width: 46px !important;
   max-width: 46px !important;
-}}
+}
 
-/* Text input styling */
-div[data-testid="stTextInput"] {{
+div[data-testid="stTextInput"] {
   width: 100% !important;
   background: transparent !important;
   border: none !important;
   padding: 0 !important;
   margin: 0 !important;
-}}
+}
 
-div[data-testid="stTextInput"] > div {{
-  background: transparent !important;
+div[data-testid="stTextInput"] div {
   border: none !important;
-}}
+  background-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
 
-div[data-testid="stTextInput"] input {{
+div[data-testid="stTextInput"] input {
   background: #ffffff !important;
   border: 1px solid #EFE7DE !important;
   border-radius: 30px !important;
   color: #222222 !important;
   font-family: 'Inter', sans-serif !important;
   font-size: 14.5px !important;
-  padding: 17px 24px !important;
-  height: 56px !important;
-  min-height: 56px !important;
-  max-height: 56px !important;
+  padding: 18px 24px !important;
+  height: 60px !important;
+  min-height: 60px !important;
+  max-height: 60px !important;
   outline: none !important;
   line-height: 1.5 !important;
   transition: all .2s ease !important;
   box-shadow: 0 4px 14px rgba(0,0,0,0.03) !important;
   box-sizing: border-box !important;
-}}
+  width: 100% !important;
+}
 
-div[data-testid="stTextInput"] input:focus {{
+div[data-testid="stTextInput"] input:focus {
   border-color: #FF6B00 !important;
   box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.08) !important;
-}}
+}
 
-div[data-testid="stTextInput"] input::placeholder {{
+div[data-testid="stTextInput"] input::placeholder {
   color: #BBBBBB !important;
-}}
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+}
 
-/* Send button styling */
-div[data-testid="stButton"] {{
+div[data-testid="stButton"] {
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
@@ -487,9 +512,10 @@ div[data-testid="stButton"] {{
   border: none !important;
   padding: 0 !important;
   margin: 0 !important;
-}}
+  height: 60px !important;
+}
 
-div[data-testid="stButton"] button {{
+div[data-testid="stButton"] button {
   width: 46px !important;
   height: 46px !important;
   min-width: 46px !important;
@@ -512,17 +538,17 @@ div[data-testid="stButton"] button {{
   color: transparent !important;
   font-size: 0 !important;
   padding: 0 !important;
-}}
+}
 
-div[data-testid="stButton"] button:hover {{
+div[data-testid="stButton"] button:hover {
   filter: brightness(1.08) !important;
   transform: scale(1.06) rotate(-30deg) !important;
   box-shadow: 0 6px 18px rgba(255, 107, 0, 0.4) !important;
   color: transparent !important;
-}}
+}
 
 div[data-testid="stButton"] button:active,
-div[data-testid="stButton"] button:focus {{
+div[data-testid="stButton"] button:focus {
   background:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M2.01 21L23 12 2.01 3 2 10l15 2-15 2z'/%3E%3C/svg%3E") no-repeat center,
     linear-gradient(135deg, #FF6B00, #FF9A3D) !important;
@@ -531,14 +557,14 @@ div[data-testid="stButton"] button:focus {{
   outline: none !important;
   border: none !important;
   box-shadow: 0 4px 14px rgba(255, 107, 0, 0.3) !important;
-}}
+}
 
-div[data-testid="stButton"] button p {{
+div[data-testid="stButton"] button p {
   display: none !important;
-}}
+}
 
-/* ══ BOTTOM NAV (position fixed at very bottom) ══ */
-.nd-nav {{
+/* ══ BOTTOM NAV ══ */
+.nd-nav {
   position: fixed !important;
   bottom: 16px !important;
   left: 50% !important;
@@ -554,9 +580,9 @@ div[data-testid="stButton"] button p {{
   z-index: 1600;
   box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important;
   box-sizing: border-box !important;
-}}
+}
 
-.nd-nav-item {{
+.nd-nav-item {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -566,52 +592,51 @@ div[data-testid="stButton"] button p {{
   cursor: pointer !important;
   transition: all 0.2s ease !important;
   border-right: 1px solid #EFE7DE !important;
-}}
+}
 
-.nd-nav-item:last-child {{
+.nd-nav-item:last-child {
   border-right: none !important;
-}}
+}
 
-.nd-nav-item:hover {{
+.nd-nav-item:hover {
   background: #FFF3E8 !important;
   transform: translateY(-2px) !important;
-}}
+}
 
-.nd-nav-ic {{
+.nd-nav-ic {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   height: 28px !important;
-}}
+}
 
-.nd-nav-ic svg {{
+.nd-nav-ic svg {
   transition: transform 0.2s ease !important;
-}}
+}
 
-.nd-nav-item:hover .nd-nav-ic svg {{
+.nd-nav-item:hover .nd-nav-ic svg {
   transform: scale(1.1) !important;
-}}
+}
 
-.nd-nav-lbl {{
+.nd-nav-lbl {
   font-size: 12px !important;
   font-weight: 600 !important;
   color: #222222 !important;
   text-align: center !important;
   white-space: nowrap !important;
   font-family: 'Inter', sans-serif !important;
-}}
+}
 
 /* Mobile */
-@media (max-width: 640px) {{
-  .nd-header-inner {{ padding: 0 16px; }}
-  .nd-logo-title {{ font-size: 18px !important; letter-spacing: 1px !important; }}
-  .nd-om-line {{ width: 24px !important; }}
-  .nd-om-badge {{ width: 38px !important; height: 38px !important; font-size: 16px !important; }}
-  .nd-logo-icon {{ width: 40px !important; height: 40px !important; }}
-  div[data-testid="stHorizontalBlock"] {{ left: 0 !important; transform: none !important; width: 100vw !important; bottom: 84px !important; padding: 0 16px !important; }}
-  .nd-nav {{ left: 0 !important; transform: none !important; width: 100vw !important; bottom: 8px !important; border-radius: 0 !important; border-left: none !important; border-right: none !important; }}
-  .nd-card-wrap {{ left: 0 !important; transform: none !important; width: 100vw !important; padding: 12px 8px 0 8px; bottom: 160px; }}
-}}
+@media (max-width: 640px) {
+  .nd-header-inner { padding: 0 16px; }
+  .nd-logo-title { font-size: 18px !important; letter-spacing: 1px !important; }
+  .nd-om-line { width: 24px !important; }
+  .nd-om-badge { width: 38px !important; height: 38px !important; font-size: 16px !important; }
+  .nd-logo-icon { width: 40px !important; height: 40px !important; }
+  div.st-key-chat_container { left: 0 !important; transform: none !important; width: 100vw !important; padding: 12px 8px 0 8px !important; bottom: 160px !important; border-radius: 0 !important; }
+  .nd-nav { left: 0 !important; transform: none !important; width: 100vw !important; bottom: 8px !important; border-radius: 0 !important; border-left: none !important; border-right: none !important; }
+}
 </style>
 
 <!-- ══ NAMAN DARSHAN HEADER ══ -->
@@ -661,29 +686,6 @@ div[data-testid="stButton"] button p {{
       <div class="nd-om-line"></div>
       <div class="nd-om-badge">&#2384;</div>
       <div class="nd-om-line"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ CHAT CARD (fixed, between header and input) ══ -->
-<div class="nd-card-wrap">
-  <div class="nd-card">
-    <div class="nd-card-head">
-      <div class="nd-card-head-pattern"></div>
-      <div class="nd-card-head-row">
-        <span class="nd-card-head-star">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="white">
-            <path d="M7 2L9 6.5L13.5 8.5L9 10.5L7 15L5 10.5L0.5 8.5L5 6.5L7 2zM17 12L18.2 14.8L21 16L18.2 17.2L17 20L15.8 17.2L13 16L15.8 14.8L17 12z"/>
-          </svg>
-        </span>
-        <div>
-          <div class="nd-card-head-title">AI Sales Assistant</div>
-          <div class="nd-card-head-sub">Your personal spiritual journey expert</div>
-        </div>
-      </div>
-    </div>
-    <div class="nd-msgs" id="nd-msgs">
-      {msgs_html}
     </div>
   </div>
 </div>
@@ -812,7 +814,7 @@ div[data-testid="stButton"] button p {{
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------
-# CHAT INPUT (Streamlit native columns for deployment layout)
+# CHAT CONTAINER & INPUT
 # ---------------------------------------------------
 
 def handle_submit():
@@ -821,23 +823,47 @@ def handle_submit():
         st.session_state.submitted_val = val
         st.session_state.chat_input_val = ""
 
-input_col, send_col = st.columns([12, 1])
-
-with input_col:
-    st.text_input(
-        label="Input",
-        placeholder="Ask me anything about NAMANDARSHAN SERVICES...",
-        label_visibility="collapsed",
-        key="chat_input_val",
-        on_change=handle_submit
-    )
-
-with send_col:
-    st.button(
-        label="Send",
-        key="chat_send_btn",
-        on_click=handle_submit
-    )
+with st.container(key="chat_container"):
+    msgs_html = build_messages_html(st.session_state.messages)
+    
+    st.markdown(f"""
+    <!-- ══ CHAT CARD HEADER & MESSAGES ══ -->
+    <div class="nd-card-head">
+      <div class="nd-card-head-pattern"></div>
+      <div class="nd-card-head-row">
+        <span class="nd-card-head-star">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="white">
+            <path d="M7 2L9 6.5L13.5 8.5L9 10.5L7 15L5 10.5L0.5 8.5L5 6.5L7 2zM17 12L18.2 14.8L21 16L18.2 17.2L17 20L15.8 17.2L13 16L15.8 14.8L17 12z"/>
+          </svg>
+        </span>
+        <div>
+          <div class="nd-card-head-title">AI Sales Assistant</div>
+          <div class="nd-card-head-sub">Your personal spiritual journey expert</div>
+        </div>
+      </div>
+    </div>
+    <div class="nd-msgs" id="nd-msgs">
+      {msgs_html}
+    </div>
+    """, unsafe_allow_html=True)
+    
+    input_col, send_col = st.columns([12, 1])
+    
+    with input_col:
+        st.text_input(
+            label="Input",
+            placeholder="Ask me anything about NAMANDARSHAN SERVICES...",
+            label_visibility="collapsed",
+            key="chat_input_val",
+            on_change=handle_submit
+        )
+        
+    with send_col:
+        st.button(
+            label="Send",
+            key="chat_send_btn",
+            on_click=handle_submit
+        )
 
 user_input = st.session_state.submitted_val
 st.session_state.submitted_val = None
