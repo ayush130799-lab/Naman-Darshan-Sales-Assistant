@@ -4,11 +4,13 @@ import importlib
 import datetime
 
 # Force reload sub-modules so Streamlit picks up changes dynamically
+import razorpay_handler
 import prompt_builder
 import recommendation_engine
 import qa_handler
 import rag_pipeline
 
+importlib.reload(razorpay_handler)
 importlib.reload(prompt_builder)
 importlib.reload(recommendation_engine)
 importlib.reload(qa_handler)
@@ -169,11 +171,11 @@ header, footer, #MainMenu,
   gap: 0 !important;
 }}
 
-/* ══ NAMAN DARSHAN HEADER (position fixed, always on top) ══ */
+/* ══ NAMAN DARSHAN HEADER — 85px, fixed top ══ */
 .nd-header {{
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: 100px;
+  height: 85px;
   background: linear-gradient(90deg, #FF6B00 0%, #FF9A3D 100%);
   display: flex;
   align-items: center;
@@ -185,17 +187,17 @@ header, footer, #MainMenu,
 .nd-header-inner {{
   display: flex; align-items: center;
   width: 100%; max-width: 1400px;
-  padding: 0 32px;
+  padding: 0 48px;
   margin: 0 auto;
   position: relative; z-index: 2;
 }}
 
 .nd-logo {{
-  display: flex; align-items: center; gap: 16px;
+  display: flex; align-items: center; gap: 14px;
 }}
 
 .nd-logo-icon {{
-  width: 52px; height: 52px;
+  width: 48px; height: 48px;
   background: rgba(255,255,255,.95);
   border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
@@ -204,7 +206,7 @@ header, footer, #MainMenu,
 }}
 
 .nd-logo-title {{
-  font-size: 26px; font-weight: 800;
+  font-size: 24px; font-weight: 800;
   color: #ffffff; letter-spacing: 1.5px;
   text-shadow: 0 1px 4px rgba(0,0,0,.12);
   line-height: 1.1;
@@ -212,8 +214,8 @@ header, footer, #MainMenu,
 }}
 
 .nd-logo-tagline {{
-  font-size: 12px; color: rgba(255,255,255,0.95);
-  margin-top: 2px;
+  font-size: 12px; color: rgba(255,255,255,0.92);
+  margin-top: 3px;
   font-weight: 500;
   font-family: 'Inter', sans-serif;
 }}
@@ -224,98 +226,97 @@ header, footer, #MainMenu,
 }}
 
 .nd-om-line {{
-  width: 60px; height: 1.5px; background: rgba(255,255,255,.45);
+  width: 55px; height: 1.5px; background: rgba(255,255,255,.45);
 }}
 
 .nd-om-badge {{
-  width: 48px; height: 48px;
+  width: 46px; height: 46px;
   background: rgba(255,255,255,.95);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 24px; font-weight: 700; color: #FF6B00;
+  font-size: 22px; font-weight: 700; color: #FF6B00;
   box-shadow: 0 4px 12px rgba(0,0,0,.1);
 }}
 
 .nd-skyline {{
   position: absolute; right: 0; bottom: 0;
-  height: 100%; width: 420px; pointer-events: none;
-  opacity: 0.35;
+  height: 100%; width: 380px; pointer-events: none;
+  opacity: 0.32;
 }}
 
-/* ══ CHAT CONTAINER ══ */
-div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) {{
-  background: #ffffff !important;
-  border-radius: 28px !important;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.02) !important;
-  border: 1px solid #EFE7DE !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
-  
+/* ══ STREAMLIT WRAPPER: transparent, no visual styling ══ */
+/* The visual card is composed of independently fixed elements */
+.block-container div[data-testid="stVerticalBlock"]:first-child > div:has(.nd-card-head) {{
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  position: static !important;
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+}}
+
+.block-container div[data-testid="stVerticalBlock"]:first-child > div:has(.nd-card-head) > div[data-testid="stVerticalBlock"] {{
+  display: block !important;
+}}
+
+.block-container div[data-testid="stVerticalBlock"]:first-child > div:has(.nd-card-head) > div[data-testid="stVerticalBlock"] > div {{
+  display: block !important;
+}}
+
+.block-container div[data-testid="stVerticalBlock"]:first-child > div:has(.nd-card-head) > div[data-testid="stVerticalBlock"] > div > div[data-testid="stMarkdown"] {{
+  display: block !important;
+}}
+
+/* ══ WHITE CARD BACKGROUND — visual card via nd-card-bg ══ */
+.nd-card-bg {{
   position: fixed !important;
-  top: 124px !important;
+  top: 95px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  width: min(1400px, 95vw) !important;
-  bottom: 124px !important;
-  z-index: 500 !important;
+  width: min(1240px, calc(100vw - 80px)) !important;
+  height: 522px !important;
+  background: #ffffff !important;
+  border-radius: 24px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.03) !important;
+  border: 1px solid #EFE7DE !important;
+  z-index: 499 !important;
+  pointer-events: none !important;
   box-sizing: border-box !important;
 }}
 
-div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) > div[data-testid="stVerticalBlock"] {{
-  height: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 0 !important;
-}}
-
-div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) > div[data-testid="stVerticalBlock"] > div:first-child {{
-  flex: 1 1 auto !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
-}}
-
-div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) > div[data-testid="stVerticalBlock"] > div:first-child > div[data-testid="stMarkdown"] {{
-  flex: 1 1 auto !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
-}}
-
-div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) > div[data-testid="stVerticalBlock"] > div:first-child > div[data-testid="stMarkdown"] > div {{
-  flex: 1 1 auto !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
-}}
-
+/* ══ AI HEADER — fixed directly at card-top position ══ */
 .nd-card-head {{
-  background: linear-gradient(90deg, #FF6B00 0%, #FF9A3D 100%);
-  height: 120px !important;
+  position: fixed !important;
+  top: 95px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: min(1240px, calc(100vw - 80px)) !important;
+  height: 70px !important;
   box-sizing: border-box !important;
+  background: linear-gradient(90deg, #FF6B00 0%, #FF9A3D 100%) !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: center !important;
-  padding: 0 32px !important;
-  border-radius: 28px 28px 0 0 !important;
-  position: relative !important;
+  padding: 0 28px !important;
+  border-radius: 24px 24px 0 0 !important;
   overflow: hidden !important;
+  z-index: 600 !important;
   flex-shrink: 0 !important;
 }}
 
 .nd-card-head-pattern {{
   position: absolute;
   top: -20px; right: -20px;
-  width: 140px; height: 140px;
-  opacity: 0.15;
+  width: 130px; height: 130px;
+  opacity: 0.12;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' stroke='white' stroke-width='0.5' fill='none'/%3E%3Ccircle cx='50' cy='50' r='30' stroke='white' stroke-width='0.5' fill='none'/%3E%3Ccircle cx='50' cy='50' r='20' stroke='white' stroke-width='0.5' fill='none'/%3E%3Cpath d='M50 0 L50 100 M0 50 L100 50 M15 15 L85 85 M15 85 L85 15' stroke='white' stroke-width='0.3'/%3E%3Cpath d='M50 10 Q60 50 50 90 Q40 50 50 10 M10 50 Q50 60 90 50 Q50 40 10 50' fill='white' opacity='0.5'/%3E%3Cpath d='M25 25 Q50 60 75 75 Q60 50 25 25 M25 75 Q60 50 75 25 Q50 60 25 75' fill='white' opacity='0.5'/%3E%3C/svg%3E");
   background-size: cover;
   pointer-events: none;
 }}
 
 .nd-card-head-row {{
-  display: flex; align-items: center; gap: 14px;
+  display: flex; align-items: center; gap: 12px;
   position: relative; z-index: 2;
 }}
 
@@ -333,32 +334,47 @@ div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) > div[data-testid="s
 }}
 
 .nd-card-head-title {{ 
-  font-size: 20px; 
+  font-size: 19px; 
   font-weight: 700; 
   color: #ffffff; 
-  letter-spacing: .4px;
+  letter-spacing: .3px;
+  line-height: 1.2;
   font-family: 'Inter', sans-serif;
 }}
 
 .nd-card-head-sub {{ 
-  font-size: 13px; 
-  color: rgba(255,255,255,0.9); 
-  margin-top: 3px;
+  font-size: 12.5px; 
+  color: rgba(255,255,255,0.88); 
+  margin-top: 2px;
   font-family: 'Inter', sans-serif;
 }}
 
+/* ══ MESSAGES AREA — fixed, starts immediately below AI header ══ */
 .nd-msgs {{
-  flex: 1 !important;
+  position: fixed !important;
+  top: calc(95px + 70px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: min(1240px, calc(100vw - 80px)) !important;
+  height: 380px !important;
   overflow-y: auto !important;
-  padding: 24px 32px !important;
+  padding: 16px 24px !important;
+  padding-bottom: 16px !important;
+  box-sizing: border-box !important;
+  background: #ffffff !important;
+  z-index: 600 !important;
 }}
 
 .bot-row {{
-  display: flex; align-items: flex-start; gap: 14px; margin: 16px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+  margin-top: 0;
 }}
 
 .bot-av {{
-  width: 40px; height: 40px;
+  width: 38px; height: 38px;
   background: #FFF3E8;
   border: 1px solid #EFE7DE;
   border-radius: 50%;
@@ -366,7 +382,7 @@ div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) > div[data-testid="s
   flex-shrink: 0; margin-top: 2px;
 }}
 
-.bot-col {{ max-width: 75%; }}
+.bot-col {{ max-width: 72%; }}
 
 .bot-bubble {{
   background: #ffffff !important;
@@ -374,43 +390,47 @@ div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) > div[data-testid="s
   color: #222222 !important;
   padding: 14px 18px !important;
   border-radius: 18px !important;
-  font-size: 14.5px !important;
+  font-size: 14px !important;
   line-height: 1.6 !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04) !important;
   word-break: break-word !important;
 }}
 
 .user-row {{
-  display: flex; justify-content: flex-end;
-  align-items: flex-end; margin: 16px 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin-bottom: 18px;
+  margin-top: 0;
 }}
 
-.user-col {{ max-width: 75%; }}
+.user-col {{ max-width: 72%; }}
 
 .user-bubble {{
   background: #FFF3E8 !important;
-  border: 1px solid #EFE7DE !important;
+  border: 1px solid #F5D9BC !important;
   color: #222222 !important;
   padding: 14px 18px !important;
   border-radius: 18px !important;
-  font-size: 14.5px !important;
+  font-size: 14px !important;
   line-height: 1.6 !important;
   font-weight: 500 !important;
-  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.03) !important;
+  box-shadow: 0 2px 10px rgba(255, 107, 0, 0.05) !important;
   word-break: break-word !important;
 }}
 
 .msg-content {{
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }}
 
 .msg-meta {{
   font-size: 10px;
-  color: #B0B0B0;
+  color: #BBBBBB;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 4px;
+  margin-top: 2px;
 }}
 
 .user-tick {{
@@ -420,27 +440,48 @@ div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) > div[data-testid="s
 }}
 
 .nd-msgs::-webkit-scrollbar {{ width: 4px; }}
-.nd-msgs::-webkit-scrollbar-thumb {{ background: rgba(255, 107, 0, 0.2); border-radius: 4px; }}
+.nd-msgs::-webkit-scrollbar-track {{ background: transparent; }}
+.nd-msgs::-webkit-scrollbar-thumb {{ background: rgba(255, 107, 0, 0.18); border-radius: 4px; }}
 
-/* ══ CHAT INPUT ══ */
-div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) div[data-testid="stHorizontalBlock"] {{
-  flex: 0 0 auto !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  padding: 20px 32px !important;
+/* ══ INPUT SECTION — positioned below the card as a separate bar ══ */
+/* nd-input-marker identifies the input area in the DOM */
+.nd-input-marker {{
+  display: none !important;
+}}
+
+/* Target the input container: nested stVerticalBlock that contains nd-input-marker */
+div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"]:has(.nd-input-marker) {{
+  position: fixed !important;
+  top: calc(95px + 70px + 380px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: min(1240px, calc(100vw - 80px)) !important;
+  background: #FAFAF8 !important;
+  border: 1px solid #EFE7DE !important;
+  border-top: none !important;
+  border-radius: 0 0 24px 24px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06) !important;
+  z-index: 600 !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
   margin: 0 !important;
-  background: #FAF8F5 !important;
-  border-top: 1px solid #EFE7DE !important;
-  border-radius: 0 0 28px 28px !important;
+}}
+
+/* The actual horizontal block inside the input container */
+div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"]:has(.nd-input-marker) div[data-testid="stHorizontalBlock"] {{
+  width: 100% !important;
+  padding: 12px 24px !important;
+  margin: 0 !important;
+  background: transparent !important;
   box-sizing: border-box !important;
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: nowrap !important;
   align-items: center !important;
-  gap: 16px !important;
+  gap: 14px !important;
 }}
 
-div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {{
+div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"]:has(.nd-input-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {{
   background: transparent !important;
   background-color: transparent !important;
   padding: 0 !important;
@@ -451,16 +492,16 @@ div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) div[data-testid="stH
   justify-content: center !important;
 }}
 
-div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:first-child {{
+div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"]:has(.nd-input-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:first-child {{
   flex: 1 1 auto !important;
   width: auto !important;
 }}
 
-div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child {{
-  flex: 0 0 46px !important;
-  width: 46px !important;
-  min-width: 46px !important;
-  max-width: 46px !important;
+div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"]:has(.nd-input-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child {{
+  flex: 0 0 48px !important;
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
 }}
 
 div[data-testid="stTextInput"] {{
@@ -483,28 +524,28 @@ div[data-testid="stTextInput"] input {{
   background: #ffffff !important;
   border: 1px solid #EFE7DE !important;
   border-radius: 30px !important;
-  color: #222222 !important;
+  color: #333333 !important;
   font-family: 'Inter', sans-serif !important;
-  font-size: 14.5px !important;
-  padding: 18px 24px !important;
-  height: 60px !important;
-  min-height: 60px !important;
-  max-height: 60px !important;
+  font-size: 14px !important;
+  padding: 0 24px !important;
+  height: 56px !important;
+  min-height: 56px !important;
+  max-height: 56px !important;
   outline: none !important;
-  line-height: 1.5 !important;
+  line-height: 56px !important;
   transition: all .2s ease !important;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.03) !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04) !important;
   box-sizing: border-box !important;
   width: 100% !important;
 }}
 
 div[data-testid="stTextInput"] input:focus {{
   border-color: #FF6B00 !important;
-  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.08) !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.07) !important;
 }}
 
 div[data-testid="stTextInput"] input::placeholder {{
-  color: #BBBBBB !important;
+  color: #C0C0C0 !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
   overflow: hidden !important;
@@ -518,22 +559,22 @@ div[data-testid="stButton"] {{
   border: none !important;
   padding: 0 !important;
   margin: 0 !important;
-  height: 60px !important;
+  height: 56px !important;
 }}
 
 div[data-testid="stButton"] button {{
-  width: 46px !important;
-  height: 46px !important;
-  min-width: 46px !important;
-  max-width: 46px !important;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
   border: none !important;
   border-radius: 50% !important;
   cursor: pointer !important;
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M2.01 21L23 12 2.01 3 2 10l15 2-15 2z'/%3E%3C/svg%3E") no-repeat center,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M2.01 21L23 12 2.01 3 2 10l15 2-15 2z'/%3E%3C/svg%3E") no-repeat center,
     linear-gradient(135deg, #FF6B00, #FF9A3D) !important;
-  background-size: 16px, cover !important;
-  box-shadow: 0 4px 14px rgba(255, 107, 0, 0.3) !important;
+  background-size: 18px, cover !important;
+  box-shadow: 0 4px 16px rgba(255, 107, 0, 0.35) !important;
   transition: all .2s ease !important;
   display: flex !important;
   align-items: center !important;
@@ -549,42 +590,42 @@ div[data-testid="stButton"] button {{
 div[data-testid="stButton"] button:hover {{
   filter: brightness(1.08) !important;
   transform: scale(1.06) rotate(-30deg) !important;
-  box-shadow: 0 6px 18px rgba(255, 107, 0, 0.4) !important;
+  box-shadow: 0 6px 20px rgba(255, 107, 0, 0.45) !important;
   color: transparent !important;
 }}
 
 div[data-testid="stButton"] button:active,
 div[data-testid="stButton"] button:focus {{
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M2.01 21L23 12 2.01 3 2 10l15 2-15 2z'/%3E%3C/svg%3E") no-repeat center,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M2.01 21L23 12 2.01 3 2 10l15 2-15 2z'/%3E%3C/svg%3E") no-repeat center,
     linear-gradient(135deg, #FF6B00, #FF9A3D) !important;
-  background-size: 16px, cover !important;
+  background-size: 18px, cover !important;
   color: transparent !important;
   outline: none !important;
   border: none !important;
-  box-shadow: 0 4px 14px rgba(255, 107, 0, 0.3) !important;
+  box-shadow: 0 4px 16px rgba(255, 107, 0, 0.35) !important;
 }}
 
 div[data-testid="stButton"] button p {{
   display: none !important;
 }}
 
-/* ══ BOTTOM NAV ══ */
+/* ══ BOTTOM NAV — below chat card, same width ══ */
 .nd-nav {{
   position: fixed !important;
-  bottom: 24px !important;
+  top: calc(95px + 70px + 380px + 72px + 10px) !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  width: min(1400px, 95vw) !important;
+  width: min(1240px, calc(100vw - 80px)) !important;
   background: #ffffff !important;
-  border-radius: 24px !important;
+  border-radius: 20px !important;
   border: 1px solid #EFE7DE !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-around !important;
-  padding: 14px 10px !important;
-  z-index: 1600;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important;
+  padding: 12px 12px !important;
+  z-index: 1600 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.05) !important;
   box-sizing: border-box !important;
 }}
 
@@ -594,7 +635,7 @@ div[data-testid="stButton"] button p {{
   align-items: center !important;
   gap: 8px !important;
   flex: 1 !important;
-  padding: 6px 2px !important;
+  padding: 4px 4px !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
   border-right: 1px solid #EFE7DE !important;
@@ -605,7 +646,8 @@ div[data-testid="stButton"] button p {{
 }}
 
 .nd-nav-item:hover {{
-  background: #FFF3E8 !important;
+  background: #FFF8F2 !important;
+  border-radius: 12px !important;
   transform: translateY(-2px) !important;
 }}
 
@@ -613,7 +655,7 @@ div[data-testid="stButton"] button p {{
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  height: 28px !important;
+  height: 32px !important;
 }}
 
 .nd-nav-ic svg {{
@@ -627,21 +669,64 @@ div[data-testid="stButton"] button p {{
 .nd-nav-lbl {{
   font-size: 12px !important;
   font-weight: 600 !important;
-  color: #222222 !important;
+  color: #333333 !important;
   text-align: center !important;
   white-space: nowrap !important;
   font-family: 'Inter', sans-serif !important;
 }}
 
-/* Mobile */
+/* ══ TABLET (768–1024px) ══ */
+@media (max-width: 1024px) and (min-width: 641px) {{
+  div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) {{
+    width: calc(100vw - 60px) !important;
+    height: 680px !important;
+  }}
+  .nd-nav {{
+    width: calc(100vw - 60px) !important;
+  }}
+  .nd-header-inner {{ padding: 0 30px; }}
+}}
+
+/* ══ MOBILE (≤640px) ══ */
 @media (max-width: 640px) {{
-  .nd-header-inner {{ padding: 0 16px; }}
-  .nd-logo-title {{ font-size: 18px !important; letter-spacing: 1px !important; }}
-  .nd-om-line {{ width: 24px !important; }}
-  .nd-om-badge {{ width: 38px !important; height: 38px !important; font-size: 16px !important; }}
-  .nd-logo-icon {{ width: 40px !important; height: 40px !important; }}
-  div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) {{ left: 0 !important; transform: none !important; width: 100vw !important; padding: 12px 8px 0 8px !important; bottom: 160px !important; border-radius: 0 !important; }}
-  .nd-nav {{ left: 0 !important; transform: none !important; width: 100vw !important; bottom: 8px !important; border-radius: 0 !important; border-left: none !important; border-right: none !important; }}
+  .nd-header {{ height: 70px !important; }}
+  .nd-header-inner {{ padding: 0 14px; }}
+  .nd-logo-title {{ font-size: 16px !important; letter-spacing: 0.8px !important; }}
+  .nd-logo-tagline {{ font-size: 10px !important; }}
+  .nd-om-line {{ width: 20px !important; }}
+  .nd-om-badge {{ width: 34px !important; height: 34px !important; font-size: 14px !important; }}
+  .nd-logo-icon {{ width: 36px !important; height: 36px !important; }}
+  div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) {{
+    left: 0 !important;
+    transform: none !important;
+    width: 100vw !important;
+    top: 78px !important;
+    height: calc(100vh - 78px - 120px) !important;
+    border-radius: 0 !important;
+  }}
+  .nd-nav {{
+    left: 0 !important;
+    transform: none !important;
+    width: 100vw !important;
+    top: auto !important;
+    bottom: 0 !important;
+    border-radius: 0 !important;
+    padding: 10px 4px !important;
+  }}
+  .nd-nav-lbl {{ font-size: 10px !important; white-space: normal !important; text-align: center !important; }}
+  .nd-card-head {{ height: 72px !important; padding: 0 16px !important; }}
+  .nd-msgs {{ padding: 14px 14px !important; }}
+  div[data-testid="stVerticalBlock"] > div:has(.nd-card-head) div[data-testid="stHorizontalBlock"] {{ padding: 12px 14px !important; }}
+}}
+
+/* ══ STREAMLIT COMPONENTS IFRAME FIX ══ */
+div[data-testid="stHtml"] {{
+  pointer-events: none !important;
+  position: absolute !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  z-index: -1 !important;
 }}
 </style>
 
@@ -696,6 +781,9 @@ div[data-testid="stButton"] button p {{
   </div>
 </div>
 
+<!-- ══ WHITE CARD BACKGROUND ══ -->
+<div class="nd-card-bg"></div>
+
 <!-- ══ BOTTOM NAV ══ -->
 <div class="nd-nav">
   <div class="nd-nav-item">
@@ -747,76 +835,6 @@ div[data-testid="stButton"] button p {{
     <div class="nd-nav-lbl">Astro Services</div>
   </div>
 </div>
-
-<script>
-(function() {{
-  'use strict';
-  
-  // Auto-scroll messages
-  function scrollMsgs() {{
-    var msgs = document.getElementById('nd-msgs');
-    if (msgs) msgs.scrollTop = msgs.scrollHeight;
-  }}
-  scrollMsgs();
-  setTimeout(scrollMsgs, 200);
-  setTimeout(scrollMsgs, 500);
-  
-  // Target ALL possible Streamlit scroll containers
-  function lockScrollContainers() {{
-    var selectors = [
-      '.stApp',
-      '.main',
-      '[data-testid="stMain"]',
-      '[data-testid="stAppViewContainer"]',
-      '.block-container',
-      '.appview-container',
-      '.reportview-container'
-    ];
-    
-    selectors.forEach(function(sel) {{
-      var el = document.querySelector(sel);
-      if (el) {{
-        el.style.cssText += ';overflow:hidden!important;height:100vh!important;max-height:100vh!important;';
-        el.scrollTop = 0;
-      }}
-    }});
-    
-    // Force scroll to top on all possible containers
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
-    window.scrollTo(0, 0);
-  }}
-  
-  // Run immediately
-  lockScrollContainers();
-  
-  // Run after Streamlit renders
-  setTimeout(lockScrollContainers, 100);
-  setTimeout(lockScrollContainers, 300);
-  setTimeout(lockScrollContainers, 600);
-  setTimeout(lockScrollContainers, 1000);
-  setTimeout(lockScrollContainers, 2000);
-  
-  // Use MutationObserver to catch Streamlit's dynamic renders
-  var observer = new MutationObserver(function(mutations) {{
-    lockScrollContainers();
-  }});
-  
-  observer.observe(document.body, {{
-    childList: true,
-    subtree: true
-  }});
-  
-  // Also intercept scroll events on all containers
-  ['scroll', 'wheel', 'touchmove'].forEach(function(evt) {{
-    window.addEventListener(evt, function(e) {{
-      window.scrollTo(0, 0);
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
-    }}, {{ passive: true }});
-  }});
-}})();
-</script>
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------
@@ -851,7 +869,10 @@ with st.container():
   {msgs_html}
 </div>
 """, unsafe_allow_html=True)
-    
+
+# Input section — in its own container so CSS can target it via nd-input-marker
+with st.container():
+    st.markdown('<div class="nd-input-marker"></div>', unsafe_allow_html=True)
     input_col, send_col = st.columns([12, 1])
     
     with input_col:
@@ -869,6 +890,7 @@ with st.container():
             key="chat_send_btn",
             on_click=handle_submit
         )
+
 
 user_input = st.session_state.submitted_val
 st.session_state.submitted_val = None
@@ -913,3 +935,108 @@ if user_input:
     })
 
     st.rerun()
+
+# ---------------------------------------------------
+# JAVASCRIPT INJECTION VIA SANDBOXED IFRAME
+# ---------------------------------------------------
+st.components.v1.html("""
+<script>
+(function() {
+  var doc = window.parent.document;
+  var win = window.parent;
+  
+  // Cleanup any leftover debug element
+  var existingDiag = doc.getElementById('diag-box');
+  if (existingDiag) existingDiag.remove();
+  
+  // Lock Streamlit containers to prevent page scroll
+  function lockScrollContainers() {
+    var selectors = [
+      '.stApp', '.main',
+      '[data-testid="stMain"]',
+      '[data-testid="stAppViewContainer"]',
+      '.block-container', '.appview-container'
+    ];
+    selectors.forEach(function(sel) {
+      var el = doc.querySelector(sel);
+      if (el) {
+        el.style.overflow = 'hidden';
+        el.style.height = '100vh';
+        el.style.maxHeight = '100vh';
+        el.scrollTop = 0;
+      }
+    });
+    doc.body.scrollTop = 0;
+    doc.documentElement.scrollTop = 0;
+    win.scrollTo(0, 0);
+  }
+  
+  // Reorder: put input section at BOTTOM of card
+  function reorderCard() {
+    // Commented out DOM mutation to prevent React DOM manipulation errors.
+    // React loses references/event listeners when raw JS reparents/appends elements,
+    // which caused the text input field to become completely non-responsive/un-typeable.
+    /*
+    var hBlock = doc.querySelector('[data-testid="stHorizontalBlock"]');
+    if (!hBlock) return;
+    var cardHead = doc.querySelector('.nd-card-head');
+    if (!cardHead) return;
+    var hBlockAncestor = hBlock;
+    var targetParent = null;
+    while (hBlockAncestor && hBlockAncestor !== doc.body) {
+      var parent = hBlockAncestor.parentElement;
+      if (!parent) break;
+      if (parent.contains(cardHead) && parent.getAttribute('data-testid') === 'stVerticalBlock') {
+        targetParent = parent;
+        break;
+      }
+      hBlockAncestor = parent;
+    }
+    if (!targetParent) return;
+    if (hBlockAncestor.parentElement === targetParent) {
+      targetParent.appendChild(hBlockAncestor);
+    }
+    */
+    scrollMsgs();
+  }
+  
+  function scrollMsgs() {
+    var msgs = doc.getElementById('nd-msgs');
+    if (msgs) msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function init() {
+    lockScrollContainers();
+    reorderCard();
+    scrollMsgs();
+  }
+  
+  init();
+  [50, 150, 350, 700, 1200, 2500].forEach(function(t) {
+    win.setTimeout(init, t);
+  });
+  
+  var pending = false;
+  var observer = new win.MutationObserver(function() {
+    lockScrollContainers();
+    if (!pending) {
+      pending = true;
+      win.requestAnimationFrame(function() {
+        reorderCard();
+        scrollMsgs();
+        pending = false;
+      });
+    }
+  });
+  observer.observe(doc.body, { childList: true, subtree: true });
+  
+  ['scroll', 'wheel', 'touchmove'].forEach(function(evt) {
+    win.addEventListener(evt, function() {
+      win.scrollTo(0, 0);
+      doc.body.scrollTop = 0;
+      doc.documentElement.scrollTop = 0;
+    }, { passive: true });
+  });
+})();
+</script>
+""", height=0, width=0)

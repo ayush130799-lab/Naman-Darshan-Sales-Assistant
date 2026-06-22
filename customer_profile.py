@@ -245,6 +245,18 @@ def upsert_customer_profile(user_id: str, session: dict):
             notes_parts.append(f"Traveller type: {session['qualification']}")
         notes = "; ".join(notes_parts)
 
+        # Define placeholders set to avoid saving placeholder string values in DB
+        _PLACEHOLDERS = {
+            "not specified", "not collected", "not collected yet", "none", "unknown",
+            "not specified yet", "not provided", "n/a", "null", "not yet specified",
+            "unspecified", "undefined"
+        }
+        
+        def clean_val(val):
+            if val is not None and isinstance(val, str) and val.strip().lower() in _PLACEHOLDERS:
+                return None
+            return val
+
         payload = {
             "user_id":                user_id,
             "lead_stage":             stage,
@@ -253,31 +265,31 @@ def upsert_customer_profile(user_id: str, session: dict):
             "notes":                  notes,
 
             # Customer identity
-            "customer_name":          session.get("customer_name"),
-            "phone":                  session.get("phone"),
+            "customer_name":          clean_val(session.get("customer_name")),
+            "phone":                  clean_val(session.get("phone")),
 
             # Trip details
-            "temple":                 session.get("temple"),
-            "travel_date":            session.get("date"),
+            "temple":                 clean_val(session.get("temple")),
+            "travel_date":            clean_val(session.get("date")),
             "total_travellers":       session.get("people"),
             "adults":                 session.get("adults_count"),
             "children":               session.get("children_count"),
             "seniors":                session.get("senior_count"),
             "has_elderly_or_children": bool(session.get("elderly")),
-            "departure_city":         session.get("departure_city"),
-            "budget":                 session.get("budget"),
-            "special_requirements":   session.get("special_requirements"),
+            "departure_city":         clean_val(session.get("departure_city")),
+            "budget":                 clean_val(session.get("budget")),
+            "special_requirements":   clean_val(session.get("special_requirements")),
 
             # Service context
-            "service_type":           session.get("package_type"),
-            "puja_name":              session.get("puja"),
-            "puja_mode":              session.get("puja_mode"),
+            "service_type":           clean_val(session.get("package_type")),
+            "puja_name":              clean_val(session.get("puja")),
+            "puja_mode":              clean_val(session.get("puja_mode")),
 
             # ── Payment info (synced from session) ──────────────────────
-            "booking_id":             session.get("booking_id"),
+            "booking_id":             clean_val(session.get("booking_id")),
             "amount":                 session.get("amount"),
-            "payment_link":           session.get("payment_link"),
-            "payment_status":         session.get("payment_status"),
+            "payment_link":           clean_val(session.get("payment_link")),
+            "payment_status":         clean_val(session.get("payment_status")),
             "booking_status":         "confirmed" if session.get("booking_confirmed") else (
                                           "awaiting_payment" if session.get("payment_link") else None
                                       ),
@@ -291,11 +303,11 @@ def upsert_customer_profile(user_id: str, session: dict):
             "has_elderly_or_children",  # bool — keep even if False
         )}
 
-        # Always keep these even if None (they are identity fields)
+        # Always keep these (they are identity fields), mapping placeholders to None to clean DB
         for identity_field in ("customer_name", "phone", "temple", "travel_date",
                                 "total_travellers", "departure_city", "budget"):
-            if session.get(identity_field) is not None:
-                payload_clean[identity_field] = session.get(identity_field)
+            val = clean_val(session.get(identity_field))
+            payload_clean[identity_field] = val
 
         _profile_col.update_one(
             {"user_id": user_id},

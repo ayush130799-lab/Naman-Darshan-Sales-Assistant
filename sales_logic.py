@@ -12,13 +12,15 @@ def detect_user_intent(query):
     # ---------------------------------------------------
     if any(w in query for w in [
         "check payment", "payment status", "payment done", "payment successful",
-        "payment complete", "payment received", "did my payment", "payment confirm",
+        "payment complete", "payment completed", "completed the payment", "completed payment",
+        "payment received", "did my payment", "payment confirm",
         "payment ho gaya", "payment hua", "payment check", "payment pending",
         "payment failed", "payment ka status", "booking status", "check my booking",
         "booking confirm hua", "booking ho gaya", "mera payment", "payment verify",
         "is payment done", "has payment", "payment through", "went through",
         "payment link status", "payment link check", "paid already", "i have paid",
-        "already paid", "payment kar diya", "payment kar chuka",
+        "already paid", "payment kar diya", "payment kar chuka", "done the payment",
+        "have completed", "has completed", "i paid", "i have paid"
     ]):
         return "CHECK_PAYMENT"
 

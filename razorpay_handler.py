@@ -347,7 +347,7 @@ def create_payment_link(user_id: str, booking: dict, amount: int = None) -> dict
 # CORE API: Get Payment Status
 # --------------------------------------------------
 
-def get_payment_status(user_id: str, booking_id: str = None) -> dict:
+def get_payment_status(user_id: str, booking_id: str = None, query: str = None) -> dict:
     """
     Returns the latest payment status for a user.
     Looks up the most recent payment record in MongoDB.
@@ -355,6 +355,7 @@ def get_payment_status(user_id: str, booking_id: str = None) -> dict:
     Args:
         user_id:    Session user ID
         booking_id: Optional specific booking ID to look up
+        query:      Optional user query to check for manual payment claims in mock mode
 
     Returns:
         {
@@ -381,8 +382,8 @@ def get_payment_status(user_id: str, booking_id: str = None) -> dict:
         return empty
 
     try:
-        query = {"booking_id": booking_id} if booking_id else {"user_id": user_id}
-        doc = _payments_col.find_one(query, sort=[("created_at", -1)])
+        query_dict = {"booking_id": booking_id} if booking_id else {"user_id": user_id}
+        doc = _payments_col.find_one(query_dict, sort=[("created_at", -1)])
 
         if not doc:
             return empty
@@ -412,21 +413,25 @@ def get_payment_status(user_id: str, booking_id: str = None) -> dict:
             except Exception as e:
                 print(f"[razorpay_handler] Live status fetch error: {e}")
 
-        # In mock mode, if the user asks to check payment status, we simulate that the payment succeeded.
+        # In mock mode, if the user explicitly claims they paid, we update the status to paid
         if not _rzp_available and doc.get("razorpay_payment_link_id", "").startswith("plink_mock_"):
-            live_status = "paid"
-            if doc.get("payment_status") != "paid":
-                _payments_col.update_one(
-                    {"_id": doc["_id"]},
-                    {"$set": {
-                        "payment_status": "paid",
-                        "booking_status": "confirmed",
-                        "paid_at": datetime.utcnow(),
-                        "updated_at": datetime.utcnow()
-                    }}
-                )
-                doc["payment_status"] = "paid"
-                doc["booking_status"] = "confirmed"
+            if query:
+                q_lower = query.lower()
+                paid_keywords = ["paid", "done", "success", "complete", "gaya", "sent", "transfer", "receipt", "kar diya", "kar chuka"]
+                if any(kw in q_lower for kw in paid_keywords):
+                    live_status = "paid"
+                    if doc.get("payment_status") != "paid":
+                        _payments_col.update_one(
+                            {"_id": doc["_id"]},
+                            {"$set": {
+                                "payment_status": "paid",
+                                "booking_status": "confirmed",
+                                "paid_at": datetime.utcnow(),
+                                "updated_at": datetime.utcnow()
+                            }}
+                        )
+                        doc["payment_status"] = "paid"
+                        doc["booking_status"] = "confirmed"
 
         return {
             "found": True,

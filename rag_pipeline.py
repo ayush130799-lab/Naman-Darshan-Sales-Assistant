@@ -39,6 +39,19 @@ from difflib import get_close_matches
 from pymongo import MongoClient
 import os
 
+_PLACEHOLDERS = {
+    "not specified", "not collected", "not collected yet", "none", "unknown",
+    "not specified yet", "not provided", "n/a", "null", "not yet specified",
+    "unspecified", "undefined"
+}
+
+def is_placeholder(val) -> bool:
+    if not val:
+        return True
+    if not isinstance(val, str):
+        return False
+    return val.strip().lower() in _PLACEHOLDERS
+
 from customer_profile import (
     upsert_customer_profile,
     get_customer_profile,
@@ -304,8 +317,8 @@ def _is_temple_name_mentioned(extracted_temple: str, user_message: str) -> bool:
     if not identifying_words:
         identifying_words = [w for w in temp_words if len(w) >= 3]
         
-    # Check if at least one identifying word is in the user's message
-    return any(w in msg_lower for w in identifying_words)
+    # Check if at least one identifying word is in the user's message as a standalone word (using word boundaries)
+    return any(re.search(r"\b" + re.escape(w) + r"\b", msg_lower) for w in identifying_words)
 
 
 def _extract_and_hydrate(user_id: str, text: str, history: list = None) -> dict:
@@ -566,6 +579,8 @@ def _extract_and_hydrate(user_id: str, text: str, history: list = None) -> dict:
                 if k == "package_type":
                     continue
                 if k == "puja" and skip_puja_extraction:
+                    continue
+                if is_placeholder(v):
                     continue
                 if k == "preferred_time" and v is not None:
                     if not is_valid_preferred_time(str(v)):
@@ -1268,6 +1283,8 @@ def _hydrate_from_customer_profile(user_id: str, booking: dict):
 
         merged = []
         for session_key, value in standardized_profile.items():
+            if is_placeholder(value):
+                continue
             # Only backfill if the session doesn't already have this value
             if not booking.get(session_key) and value:
                 from booking_flow import update_booking
@@ -1429,11 +1446,12 @@ def generate_response(query: str, history: list, user_id: str) -> str:
             missing_payment_fields.append("WhatsApp number")
 
         if missing_payment_fields:
-            # Redirect to a soft information-request — ask for missing fields first
-            # Override intent so prompt_builder generates the right response
-            intent = "GENERAL"
+            if not booking.get("customer_name") or not booking.get("phone"):
+                intent = "CLOSE"
+            else:
+                intent = "GENERAL"
             booking["_payment_missing"] = missing_payment_fields
-            print(f"[rag_pipeline] PAYMENT_CONFIRM blocked — missing: {missing_payment_fields}")
+            print(f"[rag_pipeline] PAYMENT_CONFIRM blocked — missing: {missing_payment_fields}, redirecting to {intent}")
         elif not booking.get("payment_link"):  # Don’t re-generate if link already exists
             print(f"[rag_pipeline] Generating Razorpay payment link for user_id={user_id}")
             pay_result = razorpay_handler.create_payment_link(
@@ -1462,6 +1480,7 @@ def generate_response(query: str, history: list, user_id: str) -> str:
         status_result = razorpay_handler.get_payment_status(
             user_id=user_id,
             booking_id=booking.get("booking_id"),
+            query=query_stripped,
         )
         if status_result["found"]:
             live_pstatus = status_result["payment_status"]

@@ -102,7 +102,9 @@ Do NOT ask for travel dates, travel time, or number of people yet. Ask ONLY abou
     people        = booking_data.get("people")        or "your group"
     date          = booking_data.get("date")          or "your travel date"
     elderly       = booking_data.get("elderly", False)
-    customer_name = booking_data.get("customer_name") or None
+    customer_name = booking_data.get("customer_name")
+    if customer_name and str(customer_name).strip().lower() in ("not specified", "not collected", "not collected yet", "none", "unknown", "not specified yet", "not provided", "n/a", "null", "not yet specified", "unspecified", "undefined"):
+        customer_name = None
     has_name      = bool(customer_name)
     has_phone     = bool(booking_data.get("phone"))
     queue         = get_queue_fact(temple)
@@ -631,7 +633,13 @@ DO NOT use a defensive tone.
 """
 
     if intent == "CLOSE":
-        if has_name and has_phone:
+        if not has_name or not has_phone:
+            return """
+The customer wants to proceed with booking or payment, but we do not have their full name and mobile number.
+You MUST output EXACTLY the following message. Do NOT add any extra text, headings, placeholders, greetings, or emojis:
+"Before proceeding, please share your name and mobile number so I can create your booking and generate a payment link."
+"""
+        else:
             lead_stage = booking_data.get("lead_stage", "form_not_filled")
             missing = get_missing_fields(booking_data)
             
@@ -665,42 +673,6 @@ Max 50 words.
 User wants to book, but they have ALREADY completed the booking and payment (booking confirmed).
 Warmly remind them that their booking (ID: {booking_id_val}) is already confirmed and we are ready for them. Offer any add-on services from the upsell menu if they need anything else.
 Max 60 words.
-"""
-
-        elif has_name:
-            return f"""
-User is proceeding with booking. Name ({customer_name}) is collected. Phone is NOT yet in CURRENT BOOKING DATA.
-DO NOT show any booking process checklist.
-DO NOT mention the 100% {service_term.capitalize()} Guarantee if already mentioned in CONVERSATION HISTORY.
-Ask ONLY for their WhatsApp number in one warm sentence:
-"Thank you, {customer_name}! Which WhatsApp number should we send the booking confirmation to?"
-Max 25 words. Nothing else.
-"""
-        elif has_phone:
-            return f"""
-User wants to proceed with booking. Their WhatsApp number is already collected (phone is in CURRENT BOOKING DATA).
-Name is NOT yet collected.
-DO NOT show the booking process checklist.
-DO NOT explain how booking works.
-DO NOT address the customer by their phone number — that is NOT their name.
-
-Warmly acknowledge their number was received and ask for their name:
-"Thank you! May I know your name please so I can address you properly?"
-Max 20 words.
-"""
-        else:
-            return f"""
-User wants to proceed with booking. Neither name nor phone is in the CURRENT BOOKING DATA.
-DO NOT show the booking process checklist.
-DO NOT explain how booking works.
-
-ASK FOR PHONE NUMBER FIRST — this is critical because the phone number allows us to
-check if the customer already has a profile on file, so we can skip re-asking details
-they have already provided before.
-
-Just warmly ask for their WhatsApp number:
-"Wonderful! 🙏 To check your details and get started, may I have your WhatsApp number please?"
-Max 20 words.
 """
 
     if intent == "SEND_DETAILS":
@@ -1074,14 +1046,14 @@ Tone: celebratory, warm, devotional. Max 80 words.
 The customer's payment is still PENDING — they have not completed the payment yet.
 
 Respond warmly:
-"Your booking is reserved with Booking ID: {booking_id}. However, the payment is still pending.
+"A payment link has been generated with Booking ID: {booking_id}. However, the payment is still pending.
 
 Please complete your payment using the link below to confirm your booking:
 👉 {payment_link}
 
 Amount: {amount_str}
 
-Your slot will be secured as soon as payment is received."
+Your booking will be confirmed automatically as soon as payment is received."
 
 Tone: helpful, not pushy. Max 80 words.
 """
@@ -1139,10 +1111,12 @@ If they asked about services → explain assisted coordination.
 If they just provided booking/yatra details or answered a question (like providing their phone number to retrieve their profile):
   - If the profile is now COMPLETE (Lead Stage = form_filled_no_payment, no missing fields):
     Acknowledge the details retrieved from the database (e.g. temple/destination, travel date, people count, budget, departure city) and warmly ask if they would like to proceed with booking or checking slot availability for these exact details.
-    Example: "Hello Suresh! I see you are planning a visit to Kedarnath on 15 September 2026 with a group of 4 people, departing from Chennai, with a budget of 70000. Would you like to proceed with verifying slot availability for these details?"
+    If the customer's name is known, address them by name (e.g. "Hello Rahul!"). If the name is NOT known/not collected yet, address them generally (e.g. "Hello!" or "Namaste!") — do NOT make up, assume, or hallucinate a name.
+    Example (when name is not collected): "Hello! I see you are planning a visit to Kedarnath on 15 September 2026 with a group of 4 people, departing from Chennai, with a budget of 70000. Would you like to proceed with verifying slot availability for these details?"
+    Example (when name is Rahul): "Hello Rahul! I see you are planning a visit to Kedarnath on 15 September 2026 with a group of 4 people, departing from Chennai, with a budget of 70000. Would you like to proceed with verifying slot availability for these details?"
   - If there are still missing fields:
     Warmly acknowledge the details retrieved/provided, and then ask ONLY for the next missing detail from the CURRENT BOOKING DATA (following the PROGRESSIVE BOOKING FLOW DIRECTIVE). Do NOT ask for details that are already present.
-Do NOT ask for details that are already present in the CURRENT BOOKING DATA. If the devotee's Name is already known, do NOT ask for it, do NOT ask them to confirm it, and do NOT say "confirm your name" or "confirm your details". Instead, address them by their name (e.g. "Hello Rahul") and ask ONLY for the next missing detail (e.g. WhatsApp phone number).
+Do NOT ask for details that are already present in the CURRENT BOOKING DATA. If the devotee's Name is already known, do NOT ask for it, do NOT ask them to confirm it, and do NOT say "confirm your name" or "confirm your details". Instead, address them by their name (e.g. "Hello Rahul" if name is Rahul) and ask ONLY for the next missing detail (e.g. WhatsApp phone number). If the name is not known, do NOT address them by any name, do NOT guess or assume any name if it is not explicitly provided, and do NOT use any placeholder or greeting name.
 Do NOT repeat queue times, assisted wait time, or elderly/children benefits already mentioned in CONVERSATION HISTORY.
 Do NOT introduce social proof (40 lakh devotees, 4.7 stars) unless it fits naturally and has not been mentioned before.
 """
@@ -1183,7 +1157,10 @@ def build_prompt(
     date          = booking_data.get("date")     or "Not specified yet"
     people        = booking_data.get("people")   or "Not specified yet"
     elderly       = booking_data.get("elderly", False)
-    name          = booking_data.get("customer_name") or "Not collected yet"
+    name          = booking_data.get("customer_name")
+    if name and str(name).strip().lower() in ("not specified", "not collected", "not collected yet", "none", "unknown", "not specified yet", "not provided", "n/a", "null", "not yet specified", "unspecified", "undefined"):
+        name = None
+    name          = name or "Not collected yet"
     phone         = booking_data.get("phone")    or "Not collected yet"
     qualification = booking_data.get("qualification") or "Not collected yet"
     
