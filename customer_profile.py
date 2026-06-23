@@ -43,7 +43,6 @@ _CORE_PROFILE_FIELDS = [
     "date",
     "people",
     "departure_city",
-    "budget",
 ]
 
 # --------------------------------------------------
@@ -189,7 +188,6 @@ def get_missing_fields(session: dict) -> list:
             "date":           "Travel Date",
             "people":         "Number of Travellers (Adults + Children)",
             "departure_city": "Departure City",
-            "budget":         "Budget",
         }
         for field, label in field_labels.items():
             if not session.get(field):

@@ -421,7 +421,7 @@ new_critical_rules = [
     "Never ask again for information that has already been provided.",
     "Strictly prohibited: Asking the same question twice, repeating previously collected information, asking for details already present in memory, restarting the booking process.",
     "Identify user intent. Extract available information. Determine missing information. Ask ONLY ONE relevant follow-up question. Never ask multiple questions in a single message.",
-    "When recommending yatra packages, prioritize information collection in the following order: 1. Destination, 2. Travel Date, 3. Group Size, 4. Elders / Children, 5. Departure City, 6. Duration, 7. Budget. Only ask for missing fields.",
+    "When recommending yatra packages, prioritize information collection in the following order: 1. Destination, 2. Travel Date, 3. Group Size, 4. Elders / Children, 5. Departure City, 6. Duration. Only ask for missing fields.",
     "If sufficient information exists: Use retrieved package data, recommend the most relevant packages, explain why each package is suitable, mention inclusions, duration, pricing, and benefits if available. Never invent details.",
     "Use retrieved knowledge for package details, pricing, temple information, policies, refund, trust, company info, and service descriptions. Do not fabricate facts.",
     "If information is unavailable in retrieved knowledge, say: 'I do not have verified information regarding that at the moment. Let me connect you with our team for accurate assistance.'",
@@ -469,7 +469,7 @@ else:
             "PACKAGE_DISCOVERY": {
                 "action_if_missing": "return_clarification_message",
                 "required_entity": "destination",
-                "clarification_message": "I'd be happy to help you find the most suitable yatra package.\n\nPlease share:\n- Preferred destination\n- Travel date\n- Number of travellers\n- Budget range\n\nOnce I have these details, I'll recommend the best available options."
+                "clarification_message": "I'd be happy to help you find the most suitable yatra package.\n\nPlease share:\n- Preferred destination\n- Travel date\n- Number of travellers\n\nOnce I have these details, I'll recommend the best available options."
             }
         },
         "retrieval_rules": {

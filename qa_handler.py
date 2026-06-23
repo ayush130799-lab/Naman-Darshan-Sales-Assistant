@@ -10,7 +10,8 @@ _qa_llm = ChatGroq(
     model="llama-3.1-8b-instant",
     temperature=0.7,
     max_tokens=400,
-    api_key=GROQ_API_KEY
+    api_key=GROQ_API_KEY,
+    max_retries=5
 )
 
 # Sub-intents that should go to recommendation_engine instead of generic RAG QA

@@ -108,6 +108,8 @@ Do NOT ask for travel dates, travel time, or number of people yet. Ask ONLY abou
     has_name      = bool(customer_name)
     has_phone     = bool(booking_data.get("phone"))
     queue         = get_queue_fact(temple)
+    from customer_profile import compute_lead_stage, get_missing_fields
+    lead_stage    = booking_data.get("lead_stage") or compute_lead_stage(booking_data)
 
     # Determine service-specific terminology dynamically based on active service
     pkg_type = booking_data.get("package_type") or ""
@@ -164,9 +166,9 @@ Do NOT ask for travel dates, travel time, or number of people yet. Ask ONLY abou
     ) if (elderly and not is_astrology) else ""
 
     trust_step3 = (
-        "Right after booking, you will immediately receive a confirmation on WhatsApp with your session details and the contact number of our representative. No full advance payment is required — you only pay a partial token amount now to book the slot, and the rest before the session starts."
+        "Right after booking, you will immediately receive a confirmation on WhatsApp with your session details and the contact number of our representative. No full advance commitment is required — you only confirm a token slot now, and the rest before the session starts."
         if is_astrology else
-        f"Right after booking, you will immediately receive a confirmation on WhatsApp with your booking ID and the contact number of our coordinator, who will be physically present with your group on the day of your temple visit. No full advance payment is required — you only pay a partial token amount now, and the rest on arrival."
+        f"Right after booking, you will immediately receive a confirmation on WhatsApp with your booking ID and the contact number of our coordinator, who will be physically present with your group on the day of your temple visit. No full advance commitment is required — you only confirm a token slot now, and the rest on arrival."
     )
 
     if intent == "GREETING":
@@ -235,7 +237,6 @@ Please let me know:
 1️⃣ Which destination interests you?
 2️⃣ Number of travelers?
 3️⃣ Preferred travel dates?
-4️⃣ Approximate budget?
 
 Based on your preferences, I'll suggest the most suitable package with complete details. 🙏"
 
@@ -633,42 +634,74 @@ DO NOT use a defensive tone.
 """
 
     if intent == "CLOSE":
-        if not has_name or not has_phone:
-            return """
-The customer wants to proceed with booking or payment, but we do not have their full name and mobile number.
-You MUST output EXACTLY the following message. Do NOT add any extra text, headings, placeholders, greetings, or emojis:
-"Before proceeding, please share your name and mobile number so I can create your booking and generate a payment link."
+        if lead_stage == "form_not_filled":
+            if not booking_data.get("temple"):
+                return f"""
+The customer wants to book a darshan, but we do not have the temple name.
+You MUST output a message following this structure:
+"🙏 Jai Shri Ram!
+
+I'd be happy to help you with your darshan booking.
+
+Please let me know:
+🛕 Temple Name
+📅 Preferred Date of Darshan
+👥 Number of Devotees
+
+Once I have these details, I'll guide you through the booking process."
+"""
+            else:
+                return f"""
+The customer wants to book a darshan and we have the temple name ({temple}), but we are missing the other core details (travel date, number of devotees, departure city).
+Acknowledge the booking request warmly, introduce the Pandit Ji naturally to guide them through the temple/darshan, and ask for the missing details (like travel date and number of devotees).
+Do NOT mention payment, payment links, checkout, or transaction.
+
+Use this conversation example as your guide:
+Customer: "I want to book darshan for Puri Jagannath Temple."
+AI: "Wonderful! I'd be happy to assist you with your darshan at Puri Jagannath Temple.
+
+As part of your experience, a knowledgeable Pandit Ji can guide you through the temple procedures and help you understand the significance of the darshan and any associated rituals.
+
+To proceed, could you please share your travel date and the number of devotees?"
+"""
+        elif not has_name or not has_phone:
+            missing_fields_list = get_missing_fields(booking_data)
+            return f"""
+All core booking details (temple, date, people, departure city) are collected, but the customer's name and/or phone are still missing.
+Output a booking summary of the details collected, and ask the user for their Full Name and Mobile Number to proceed with the booking.
+Do NOT mention payment, payment link, checkout, or transaction.
+You MUST output a message following this structure:
+"Thank you.
+
+Here is your booking summary:
+🛕 Temple: {temple}
+📅 Date: {date}
+👥 Devotees: {people}
+
+To proceed with the booking, please share:
+👤 Full Name
+📱 Mobile Number"
 """
         else:
-            lead_stage = booking_data.get("lead_stage", "form_not_filled")
-            missing = get_missing_fields(booking_data)
-            
+            # BOTH name and phone are collected, but booking not confirmed (form_filled_no_payment)
             if lead_stage == "form_filled_no_payment":
-                amount = booking_data.get("amount")
-                amount_display = f"₹{amount:,}" if amount else ""
-                amount_sentence = f"The total booking amount is {amount_display}." if amount_display else "Our team will calculate the final booking amount."
                 return f"""
-User is ready to book, and we have ALL required details in the CURRENT BOOKING DATA.
-BOTH name ({customer_name}) and phone ({booking_data.get('phone')}) are confirmed.
+User is ready to book, and we have ALL required details (core details + name and phone) in the CURRENT BOOKING DATA.
+Present the booking summary, and ask them if they would like to proceed with the booking.
+Do NOT mention payment, payment link, cost, price, checkout, or transaction.
+You MUST output a message following this structure:
+"Thank you, {customer_name}! Please review your booking details:
 
-Acknowledge their request warmly, present the details, and ask them if they would like to proceed with the payment to finalize the booking.
-Use this direction:
-"Thank you, {customer_name}! I would be happy to proceed with your booking for {temple} on {date} for {people} travellers. {amount_sentence} Would you like to proceed with the payment now to finalize the booking?"
+🛕 Temple: {temple}
+📅 Date: {date}
+👥 Devotees: {people}
+👤 Name: {customer_name}
+📱 Phone: {booking_data.get('phone')}
 
-Max 60 words.
-"""
-            elif lead_stage == "form_not_filled":
-                missing_labels = ", ".join(missing)
-                next_missing = missing[0] if missing else "departure city"
-                return f"""
-User wants to proceed with booking, but some required booking details are still missing: {missing_labels}.
-BOTH name ({customer_name}) and phone are already confirmed, so do NOT ask for name or phone.
-
-Warmly acknowledge their request, and ask ONLY for the next missing detail: {next_missing}.
-Example: "Thank you, {customer_name}! I'd be happy to help proceed with your booking. To get started, could you please share your {next_missing}?"
-Max 50 words.
+Would you like to proceed with the booking?"
 """
             else: # payment_confirmed
+                booking_id_val = booking_data.get("booking_id") or "Not generated"
                 return f"""
 User wants to book, but they have ALREADY completed the booking and payment (booking confirmed).
 Warmly remind them that their booking (ID: {booking_id_val}) is already confirmed and we are ready for them. Offer any add-on services from the upsell menu if they need anything else.
@@ -729,7 +762,7 @@ IMPORTANT: The customer wants an ONLINE puja — do NOT mention physical coordin
 "Here's how online puja booking works:
 ✅ We confirm the puja date ({date}) and assign an experienced pandit at {temple}
 ✅ Once the required details are provided, I can help you proceed with the booking process
-✅ Payment is completed securely online (UPI / bank transfer)
+✅ Booking confirmation is finalized securely
 ✅ You receive WhatsApp confirmation instantly with your booking ID and pandit details
 ✅ On the puja day, you witness the ritual live via video call from your home
 ✅ Sanctified prasad is dispatched to your address after the puja"
@@ -746,7 +779,7 @@ User asked about the booking process. Use this EXACT checklist format:
 "Here's how it works:
 ✅ We verify availability for your travel date
 ✅ Once the required details are provided, I can help you proceed with the booking process
-✅ Payment is completed securely online (UPI / bank transfer)
+✅ Booking confirmation is finalized securely
 ✅ You receive WhatsApp confirmation instantly with your booking ID
 ✅ A coordinator is assigned and physically present with your group on the {day_term}"
 
@@ -981,7 +1014,11 @@ Wish them a {blessed_term}. Max 50 words.
             return f"""
 The customer has confirmed they want to proceed with payment. A Razorpay payment link has been generated.
 
-Present the payment details CLEARLY and WARMLY. Use this EXACT structure:
+Present the payment details CLEARLY and WARMLY. You MUST start your response with: "Great! I'll now generate your payment link for the booking."
+
+Use this EXACT structure:
+
+Great! I'll now generate your payment link for the booking.
 
 1. BOOKING SUMMARY (brief):
    - Temple/Service : {temple}
@@ -1110,10 +1147,10 @@ If they asked about booking → explain process.
 If they asked about services → explain assisted coordination.
 If they just provided booking/yatra details or answered a question (like providing their phone number to retrieve their profile):
   - If the profile is now COMPLETE (Lead Stage = form_filled_no_payment, no missing fields):
-    Acknowledge the details retrieved from the database (e.g. temple/destination, travel date, people count, budget, departure city) and warmly ask if they would like to proceed with booking or checking slot availability for these exact details.
+    Acknowledge the details retrieved from the database (e.g. temple/destination, travel date, people count, departure city) and warmly ask if they would like to proceed with booking or checking slot availability for these exact details.
     If the customer's name is known, address them by name (e.g. "Hello Rahul!"). If the name is NOT known/not collected yet, address them generally (e.g. "Hello!" or "Namaste!") — do NOT make up, assume, or hallucinate a name.
-    Example (when name is not collected): "Hello! I see you are planning a visit to Kedarnath on 15 September 2026 with a group of 4 people, departing from Chennai, with a budget of 70000. Would you like to proceed with verifying slot availability for these details?"
-    Example (when name is Rahul): "Hello Rahul! I see you are planning a visit to Kedarnath on 15 September 2026 with a group of 4 people, departing from Chennai, with a budget of 70000. Would you like to proceed with verifying slot availability for these details?"
+    Example (when name is not collected): "Hello! I see you are planning a visit to Kedarnath on 15 September 2026 with a group of 4 people, departing from Chennai. Would you like to proceed with verifying slot availability for these details?"
+    Example (when name is Rahul): "Hello Rahul! I see you are planning a visit to Kedarnath on 15 September 2026 with a group of 4 people, departing from Chennai. Would you like to proceed with verifying slot availability for these details?"
   - If there are still missing fields:
     Warmly acknowledge the details retrieved/provided, and then ask ONLY for the next missing detail from the CURRENT BOOKING DATA (following the PROGRESSIVE BOOKING FLOW DIRECTIVE). Do NOT ask for details that are already present.
 Do NOT ask for details that are already present in the CURRENT BOOKING DATA. If the devotee's Name is already known, do NOT ask for it, do NOT ask them to confirm it, and do NOT say "confirm your name" or "confirm your details". Instead, address them by their name (e.g. "Hello Rahul" if name is Rahul) and ask ONLY for the next missing detail (e.g. WhatsApp phone number). If the name is not known, do NOT address them by any name, do NOT guess or assume any name if it is not explicitly provided, and do NOT use any placeholder or greeting name.
@@ -1134,7 +1171,8 @@ def build_prompt(
     history,
     sales_instruction,
     booking_data,
-    intent=None
+    intent=None,
+    max_history_turns=6
 ):
 
     # Detect online puja mode early — used throughout prompt construction
@@ -1145,8 +1183,9 @@ def build_prompt(
     # ---- Format history ----
     formatted_history = ""
     if history:
-        # Keep only the last 6 turns to avoid "Request too large" (HTTP 413) errors on long chats
-        for turn in history[-6:]:
+        # Keep only the last `max_history_turns` turns to avoid HTTP 413 errors on long chats.
+        # The caller (rag_pipeline) adjusts this dynamically based on prompt token estimate.
+        for turn in history[-max_history_turns:]:
             formatted_history += f"User: {turn.get('user', '')}\n"
             formatted_history += f"Assistant: {turn.get('assistant', '')}\n"
     else:
@@ -1421,7 +1460,6 @@ Never ask multiple questions in a single message unless absolutely necessary.
 4. Elders / Children
 5. Departure City
 6. Duration
-7. Budget
 
 ## For ONLINE PUJA — collect in this order (STRICTLY follow this — do NOT ask physical headcount):
 1. Puja Name (e.g. Rudrabhishek, Satyanarayan Puja, Sundarkaand Path)
@@ -1507,7 +1545,7 @@ Service-specific requirements to collect:
   Mandatory: Puja Name, Temple Name, Preferred Date, Number of Adults.
   Optional: Number of Children, Number of Senior Citizens.
 
-* Yatra Booking: Package Name, Travel Date, Number of Adults, Number of Children, Number of Senior Citizens, Budget (if package recommendation is required).
+* Yatra Booking: Package Name, Travel Date, Number of Adults, Number of Children, Number of Senior Citizens.
 * Darshan Booking: Temple Name, Darshan Type, Visit Date, Number of Adults, Number of Children, Number of Senior Citizens.
 * Astrology Booking: Service Type, Preferred Consultation Date, Preferred Time.
 * Prasadam Order: Prasadam Type, Quantity, Delivery Address.
@@ -1521,6 +1559,36 @@ If any required information is missing, ask ONLY for the missing information.
 1. Never claim "booking confirmed", "booking successful", "representative will call", "availability verified", "payment completed", or "booking created" unless these actions have actually been performed by the system.
 2. Replace all promises of "our representative will call you" with: "Once the required details are provided, I can help you proceed with the booking process."
 
+# PANDIT JI INVOLVEMENT RULES
+1. Whenever a user request requires the involvement of a priest, naturally mention that a Pandit Ji can assist or guide or perform the ritual.
+2. Examples where Pandit Ji SHOULD be mentioned:
+   - Puja bookings (e.g., Mahamrityunjaya Jaap, Satyanarayan Puja, Rudrabhishek)
+   - Havan
+   - Homam
+   - Abhishekam
+   - Sankalp
+   - Astrology services
+   - Special temple rituals
+   - Darshans (guiding through temple procedures and helping understand significance)
+   - Aarti
+3. Do NOT mention Pandit Ji for:
+   - Temple timings
+   - Darshan timings
+   - Ticket prices
+   - Travel packages
+   - Hotel booking
+   - General FAQs
+   - Directions
+   - Temple history
+4. Mention Pandit Ji only when it naturally helps the Customer.
+5. Conversation Examples:
+   - Customer: "I want to perform Mahamrityunjaya Jaap."
+     AI: "🙏 I can certainly help you arrange a Mahamrityunjaya Jaap. A Pandit Ji can perform this ritual according to the prescribed Vedic traditions. May I know your preferred temple, date, and budget?"
+   - Customer: "Can I perform a puja in my parents' name?"
+     AI: "Yes. During the booking process, you can provide the names for the Sankalp. If any additional religious details are required, a Pandit Ji will guide you."
+   - Customer: "I want to book darshan for Puri Jagannath Temple."
+     AI: "Wonderful! I'd be happy to assist you with your darshan at Puri Jagannath Temple. As part of your experience, a knowledgeable Pandit Ji can guide you through the temple procedures and help you understand the significance of the darshan and any associated rituals."
+
 ---
 
 # RESPONSE STYLE
@@ -1532,7 +1600,7 @@ If any required information is missing, ask ONLY for the missing information.
 * Concise and conversational
 
 Use natural language. Avoid robotic responses. Avoid form-like questioning.
-Instead of: "How many people are traveling? What is your budget? When are you traveling?"
+Instead of: "How many people are traveling? When are you traveling?"
 Ask: "Wonderful. May I know when you're planning your visit?"
 One question at a time.
 

@@ -167,7 +167,8 @@ def _generate_summary(conversation_text: str) -> str:
             model="llama-3.1-8b-instant",
             temperature=0.3,
             max_tokens=150,
-            api_key=GROQ_API_KEY
+            api_key=GROQ_API_KEY,
+            max_retries=5
         )
 
         prompt = f"""Summarize this temple booking chatbot conversation in 2-3 sentences.

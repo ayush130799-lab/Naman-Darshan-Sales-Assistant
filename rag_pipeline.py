@@ -39,6 +39,22 @@ from difflib import get_close_matches
 from pymongo import MongoClient
 import os
 
+# ── Token-guard constants (HTTP 413 prevention) ────────────────────────────
+# llama-3.1-8b-instant context window = 8 192 tokens.
+# We reserve 800 for the LLM's output (max_tokens), leaving ~7 392 for input.
+# We use 6 000 as a conservative safe threshold to absorb estimation error.
+_MAX_PROMPT_TOKENS = 5200
+
+def _rough_token_count(text: str) -> int:
+    """Conservative token estimate: ~3 characters per token.
+
+    This is a deliberate under-count so we trim *before* Groq rejects the
+    request, not after. Accuracy is not critical — we just need a cheap
+    pre-flight check.
+    """
+    return max(1, len(text) // 3)
+# ──────────────────────────────────────────────────────────────────────────
+
 _PLACEHOLDERS = {
     "not specified", "not collected", "not collected yet", "none", "unknown",
     "not specified yet", "not provided", "n/a", "null", "not yet specified",
@@ -79,7 +95,8 @@ llm = ChatGroq(
     model="llama-3.1-8b-instant",
     temperature=0.7,
     max_tokens=800,
-    api_key=GROQ_API_KEY
+    api_key=GROQ_API_KEY,
+    max_retries=5
 )
 
 
@@ -504,7 +521,8 @@ def _extract_and_hydrate(user_id: str, text: str, history: list = None) -> dict:
             model="llama-3.1-8b-instant",
             temperature=0.0,
             max_tokens=200,
-            api_key=GROQ_API_KEY
+            api_key=GROQ_API_KEY,
+            max_retries=5
         )
 
         hist_str = ""
@@ -1393,6 +1411,22 @@ def generate_response(query: str, history: list, user_id: str) -> str:
     # 2. Intent Detection
     intent = detect_user_intent(query_stripped)
 
+    # Force intent to PAYMENT_CONFIRM if profile is complete and user says yes/proceed
+    _is_profile_complete = (
+        booking.get("lead_stage") == "form_filled_no_payment"
+        and bool(booking.get("customer_name"))
+        and bool(booking.get("phone"))
+    )
+    if _is_profile_complete and intent in ("CLOSE", "GENERAL"):
+        _positives = ["yes", "yep", "yeah", "sure", "ok", "okay", "proceed", "go ahead", "confirm", "bhejo", "kar do", "please do", "agree", "correct", "right"]
+        if any(w in query_stripped.lower() for w in _positives):
+            intent = "PAYMENT_CONFIRM"
+            print(f"[rag_pipeline] Profile complete and positive query detected. Forcing intent to PAYMENT_CONFIRM.")
+
+    # Redirect BOOKING to CLOSE if name and phone are already collected
+    if intent == "BOOKING" and bool(booking.get("customer_name")) and bool(booking.get("phone")):
+        intent = "CLOSE"
+
     # Check for unsupported temple mention
     if not booking.get("temple") and _mentions_temple_not_in_db(query_stripped):
         intent = "UNSUPPORTED_TEMPLE"
@@ -1527,8 +1561,37 @@ def generate_response(query: str, history: list, user_id: str) -> str:
     booking.pop("_last_query", None)
     booking.pop("_all_pujas", None)
 
+    # ── Pre-flight token guard (prevents HTTP 413 from Groq) ──────────────
+    # Estimate the prompt size. If it exceeds the safe threshold, progressively
+    # drop the oldest history turns and rebuild the prompt until it fits.
+    # Only the history window shrinks — system instructions, booking data, RAG
+    # context, and the user's current query are always kept intact.
+    _hist_turns = 6          # matches the default in build_prompt
+    _est_tokens = _rough_token_count(prompt)
+    if _est_tokens > _MAX_PROMPT_TOKENS:
+        print(f"[rag_pipeline] 413 guard: prompt ~{_est_tokens} tokens > {_MAX_PROMPT_TOKENS} limit — trimming history")
+        while _est_tokens > _MAX_PROMPT_TOKENS and _hist_turns > 0:
+            _hist_turns -= 1
+            prompt = build_prompt(
+                query=query_stripped,
+                context=context,
+                history=history,
+                sales_instruction=sales_instruction,
+                booking_data=booking,
+                intent=intent,
+                max_history_turns=_hist_turns,
+            )
+            _est_tokens = _rough_token_count(prompt)
+            print(f"[rag_pipeline] 413 guard: history trimmed to {_hist_turns} turn(s) (~{_est_tokens} tokens)")
+        if _hist_turns == 0 and _est_tokens > _MAX_PROMPT_TOKENS:
+            # Edge case: even with zero history the prompt is huge (very large RAG context).
+            # Log a warning and let the LLM call proceed — the per-attempt handler below
+            # will catch any residual 413 and fall back gracefully.
+            print(f"[rag_pipeline] 413 guard: prompt still ~{_est_tokens} tokens after stripping all history. Proceeding anyway.")
+    # ─────────────────────────────────────────────────────────────────────
 
-    max_retries  = 3
+
+    max_retries  = 5
     backoff_secs = 5
     response_text = ""
 
@@ -1546,10 +1609,28 @@ def generate_response(query: str, history: list, user_id: str) -> str:
             break
         except Exception as e:
             err_str = str(e)
+            print(f"[rag_pipeline] LLM invoke failed on attempt {attempt}: {err_str}")
             if "429" in err_str or "rate limit" in err_str.lower():
                 if attempt < max_retries - 1:
                     wait = backoff_secs * (2 ** attempt)
                     time.sleep(wait)
+                    continue
+                response_text = "I'm experiencing high traffic right now. Please send your message again in a moment. 🙏"
+            elif "413" in err_str or "request too large" in err_str.lower():
+                # Pre-flight guard should have caught this, but handle it as a safety net.
+                # Retry once with zero history before giving up.
+                if attempt < max_retries - 1 and _hist_turns > 0:
+                    _hist_turns = 0
+                    prompt = build_prompt(
+                        query=query_stripped,
+                        context=context,
+                        history=history,
+                        sales_instruction=sales_instruction,
+                        booking_data=booking,
+                        intent=intent,
+                        max_history_turns=0,
+                    )
+                    print(f"[rag_pipeline] 413 safety-net retry: rebuilt prompt with 0 history turns")
                     continue
                 response_text = "I'm experiencing high traffic right now. Please send your message again in a moment. 🙏"
             else:

@@ -16,7 +16,8 @@ _classifier_llm = ChatGroq(
     model="llama-3.1-8b-instant",
     temperature=0.0,
     max_tokens=20,
-    api_key=GROQ_API_KEY
+    api_key=GROQ_API_KEY,
+    max_retries=5
 )
 
 _INTENT_PROMPT = """You are a message classifier for a temple assisted darshan booking chatbot.
